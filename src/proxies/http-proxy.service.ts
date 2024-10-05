@@ -34,7 +34,6 @@ export class HttpProxyService {
             return response;
 
         } catch (err) {
-            console.error('failed to proxy http request:', err);
             return (err as AxiosError).response;
         }
     }
