@@ -1,0 +1,11 @@
+endpoints:
+  - path: /api/user/name
+    method: GET
+    requestConfig:
+      url: http://www.example.com/user/name?id={{id}}
+      method: GET
+  - path: /api/user/email
+    method: GET
+    requestConfig:
+      url: http://www.example.com/user/{{id}}/email
+      method: GET

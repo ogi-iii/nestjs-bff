@@ -1,0 +1,16 @@
+endpoints:
+  - path: /api/user
+    method: POST
+    requestConfig:
+      url: http://www.example.com/user
+      method: POST
+      headers:
+        Content-Type: application/json
+      body:
+        name: '{{name}}'
+        email: '{{email}}'
+  - path: /api/users
+    method: GET
+    requestConfig:
+      url: http://www.example.com/users
+      method: GET
