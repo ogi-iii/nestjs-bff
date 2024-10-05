@@ -1,11 +1,11 @@
 endpoints:
-  - path: /api/user/name
+  - path: /api/comments
     method: GET
     requestConfig:
-      url: http://www.example.com/user/name?id={{id}}
+      url: https://jsonplaceholder.typicode.com/comments?postId={{postId}}
       method: GET
-  - path: /api/user/email
+  - path: /api/posts/comments
     method: GET
     requestConfig:
-      url: http://www.example.com/user/{{id}}/email
+      url: https://jsonplaceholder.typicode.com/posts/{{postId}}/comments
       method: GET
