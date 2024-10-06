@@ -11,30 +11,29 @@ import {
   Req,
 } from '@nestjs/common';
 import { HttpProxyService } from '../proxies/http-proxy.service';
-import { YamlConfigDto } from '../loaders/dto/yaml-config.dto';
 import { ControllerEndpointDto } from './dto/controller-endpoint.dto';
 import { Request } from 'express';
 
 /**
- * Dynamic Controller Factory for Http Proxy
+ * Controller Factory for Http Proxy
  */
-export class DynamicProxyControllerFactory {
+export class HttpProxyControllerFactory {
   /**
-   * Create the list of dynamic controllers for http request proxy.
+   * Create the list of controllers for http request proxy.
    *
-   * @param yamlConfig Dto which contains config values from yaml files.
-   * @returns List of dynamic controllers.
+   * @param endpoints List of dtos which contain endpoints info to create controllers.
+   * @returns List of controllers.
    */
-  static create(yamlConfig: YamlConfigDto): any[] {
-    return yamlConfig.endpoints.map((endpoint: ControllerEndpointDto) => {
+  static create(endpoints: ControllerEndpointDto[]): any[] {
+    return endpoints.map((endpoint) => {
       const path = endpoint.path;
       const method = endpoint.method.toLowerCase();
 
       @Controller(path)
-      class DynamicProxyController {
+      class HttpProxyController {
         constructor(private readonly httpProxyService: HttpProxyService) {}
 
-        @(DynamicProxyControllerFactory.getHttpMethodDecorator(method)())
+        @(HttpProxyControllerFactory.getHttpMethodDecorator(method)())
         async handleRequest(@Req() request: Request) {
           try {
             const response = await this.httpProxyService.proxyHttpRequest(
@@ -48,15 +47,15 @@ export class DynamicProxyControllerFactory {
         }
       }
 
-      return DynamicProxyController;
+      return HttpProxyController;
     });
   }
 
   /**
-   * Get decorator of dynamic controller from http method name.
+   * Get the decorator for the method of controller from http method name.
    *
    * @param method Http method name.
-   * @returns Decorator of dynamic controller.
+   * @returns Decorator for the method of controller.
    */
   private static getHttpMethodDecorator(method: string) {
     const methodDecoratorMap = {
