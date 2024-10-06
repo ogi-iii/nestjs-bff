@@ -255,10 +255,10 @@ describe('proxy http request', () => {
       accept: 'application/json',
     };
     const request = {
-      query: requestData,
+      query: {},
       params: {},
       body: {},
-      headers: {},
+      headers: requestData,
       method: 'GET',
     } as unknown as Request;
     const response = await httpProxyService.proxyHttpRequest(

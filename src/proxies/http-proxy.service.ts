@@ -30,7 +30,7 @@ export class HttpProxyService {
       ),
       headers: this.interpolateValuesToJSON(
         requestConfigDto.headers,
-        requestData,
+        request.headers,
       ),
     };
 
