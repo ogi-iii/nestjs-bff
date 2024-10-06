@@ -2,11 +2,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 import { YamlConfigDto } from './dto/yaml-config.dto';
+import { Logger } from '@nestjs/common';
 
 /**
  * Yaml Config File Loader
  */
 export class YamlConfigLoader {
+  static LOGGER = new Logger(YamlConfigLoader.name);
   static DEFAULT_YAML_CONFIG_DIR_PATH = './config/';
 
   /**
@@ -33,7 +35,7 @@ export class YamlConfigLoader {
         const fileContents = fs.readFileSync(filePath, 'utf8');
         return yaml.load(fileContents);
       } catch (err) {
-        console.error('failed to load yaml file:', err);
+        YamlConfigLoader.LOGGER.error('failed to load yaml file:', err);
         return {};
       }
     });
