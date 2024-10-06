@@ -25,11 +25,14 @@ export class HttpProxyService {
         /{{(\w+)}}/g,
         (_, key) => requestData[key],
       ),
-      headers: this.interpolateValues(requestConfigDto.headers, requestData),
+      headers: this.interpolateValuesToJSON(
+        requestConfigDto.headers,
+        requestData,
+      ),
     };
 
     const body = requestConfigDto.body
-      ? this.interpolateValues(requestConfigDto.body, requestData)
+      ? this.interpolateValuesToJSON(requestConfigDto.body, requestData)
       : undefined;
     if (requestMethod === 'GET') {
       // Axios GET request can NOT contain 'data' field.
@@ -53,7 +56,10 @@ export class HttpProxyService {
    * @param requestData http request data.
    * @returns JSON string for http request.
    */
-  private interpolateValues(template: object, requestData: object): object {
+  private interpolateValuesToJSON(
+    template: object,
+    requestData: object,
+  ): object {
     return JSON.parse(
       JSON.stringify(template).replace(
         /{{(\w+)}}/g,
