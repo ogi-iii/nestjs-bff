@@ -13,6 +13,7 @@ import {
 import { HttpProxyService } from '../proxies/http-proxy.service';
 import { ControllerEndpointDto } from './dto/controller-endpoint.dto';
 import { Request } from 'express';
+import { ProxyResponseDto } from './dto/proxy-response.dto';
 
 /**
  * Controller Factory for Http Proxy
@@ -34,15 +35,21 @@ export class HttpProxyControllerFactory {
         constructor(private readonly httpProxyService: HttpProxyService) {}
 
         @(HttpProxyControllerFactory.getHttpMethodDecorator(method)())
-        async handleRequest(@Req() request: Request) {
+        async handleRequest(
+          @Req() request: Request,
+        ): Promise<ProxyResponseDto> {
           try {
             const response = await this.httpProxyService.proxyHttpRequest(
               endpoint.requestConfig,
               request,
             );
-            return response;
-          } catch (error) {
-            throw new HttpException(error.message, 500);
+            return {
+              status: response.status,
+              headers: response.headers,
+              data: response.data,
+            };
+          } catch (err) {
+            throw new HttpException(err.message, 500);
           }
         }
       }
