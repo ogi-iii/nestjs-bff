@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { HttpRequestConfigDto } from './dto/http-request-config.dto';
 import { HttpProxyService } from './http-proxy.service';
 
@@ -21,9 +22,16 @@ describe('proxy http request', () => {
       name: 'test',
       email: 'test@example.com',
     };
+    const request = {
+      query: {},
+      params: {},
+      body: requestData,
+      headers: {},
+      method: 'POST',
+    } as unknown as Request;
     const response = await httpProxyService.proxyHttpRequest(
       requestConfigDto,
-      requestData,
+      request,
     );
     expect(response.status).toEqual(201);
     expect(response.data).toHaveProperty('name', requestData.name);
@@ -40,9 +48,16 @@ describe('proxy http request', () => {
     const requestData = {
       postId: 11,
     };
+    const request = {
+      query: requestData,
+      params: {},
+      body: {},
+      headers: {},
+      method: 'GET',
+    } as unknown as Request;
     const response = await httpProxyService.proxyHttpRequest(
       requestConfigDto,
-      requestData,
+      request,
     );
     expect(response.status).toEqual(200);
     expect(response.data.length).not.toEqual(0);
@@ -59,9 +74,16 @@ describe('proxy http request', () => {
     const requestData = {
       postId: 22,
     };
+    const request = {
+      query: {},
+      params: {},
+      body: requestData,
+      headers: {},
+      method: 'POST',
+    } as unknown as Request;
     const response = await httpProxyService.proxyHttpRequest(
       requestConfigDto,
-      requestData,
+      request,
     );
     expect(response.status).toEqual(200);
     expect(response.data.length).not.toEqual(0);
@@ -85,9 +107,16 @@ describe('proxy http request', () => {
       name: 'test',
       email: 'test@example.com',
     };
+    const request = {
+      query: requestData,
+      params: {},
+      body: {},
+      headers: {},
+      method: 'GET',
+    } as unknown as Request;
     const response = await httpProxyService.proxyHttpRequest(
       requestConfigDto,
-      requestData,
+      request,
     );
     expect(response.status).toEqual(200);
     expect(response.data).toHaveProperty('id', requestData.id);
@@ -112,9 +141,16 @@ describe('proxy http request', () => {
       name: 'test',
       email: 'test@example.com',
     };
+    const request = {
+      query: {},
+      params: {},
+      body: requestData,
+      headers: {},
+      method: 'POST',
+    } as unknown as Request;
     const response = await httpProxyService.proxyHttpRequest(
       requestConfigDto,
-      requestData,
+      request,
     );
     expect(response.status).toEqual(200);
     expect(response.data).toHaveProperty('id', requestData.id);
@@ -139,9 +175,16 @@ describe('proxy http request', () => {
       name: 'test',
       email: 'test@example.com',
     };
+    const request = {
+      query: requestData,
+      params: {},
+      body: {},
+      headers: {},
+      method: 'GET',
+    } as unknown as Request;
     const response = await httpProxyService.proxyHttpRequest(
       requestConfigDto,
-      requestData,
+      request,
     );
     expect(response.status).toEqual(200);
     expect(response.data).toEqual({});
@@ -163,9 +206,16 @@ describe('proxy http request', () => {
       name: 'test',
       email: 'test@example.com',
     };
+    const request = {
+      query: {},
+      params: {},
+      body: requestData,
+      headers: {},
+      method: 'POST',
+    } as unknown as Request;
     const response = await httpProxyService.proxyHttpRequest(
       requestConfigDto,
-      requestData,
+      request,
     );
     expect(response.status).toEqual(404);
   });
@@ -178,9 +228,16 @@ describe('proxy http request', () => {
       body: {},
     };
     const requestData = {};
+    const request = {
+      query: requestData,
+      params: {},
+      body: {},
+      headers: {},
+      method: 'GET',
+    } as unknown as Request;
     const response = await httpProxyService.proxyHttpRequest(
       requestConfigDto,
-      requestData,
+      request,
     );
     expect(response.status).toEqual(404);
   });
@@ -197,9 +254,16 @@ describe('proxy http request', () => {
     const requestData = {
       accept: 'application/json',
     };
+    const request = {
+      query: requestData,
+      params: {},
+      body: {},
+      headers: {},
+      method: 'GET',
+    } as unknown as Request;
     const response = await httpProxyService.proxyHttpRequest(
       requestConfigDto,
-      requestData,
+      request,
     );
     expect(response.status).toEqual(200);
     expect(response.data.headers).toHaveProperty('Accept', requestData.accept);

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { HttpRequestConfigDto } from './dto/http-request-config.dto';
+import { Request } from 'express';
 
 /**
  * Http Request Proxy Service
@@ -11,14 +12,16 @@ export class HttpProxyService {
    * Proxy http request.
    *
    * @param requestConfigDto Dto which contains http request configs.
-   * @param requestData Http request data.
+   * @param request Http request data.
    * @returns Http response.
    */
   async proxyHttpRequest(
     requestConfigDto: HttpRequestConfigDto,
-    requestData: object,
+    request: Request,
   ): Promise<AxiosResponse> {
     const requestMethod = requestConfigDto.method.toUpperCase();
+    const requestData =
+      request.method.toUpperCase() === 'GET' ? request.query : request.body;
     const axiosRequestConfig: AxiosRequestConfig = {
       method: requestMethod,
       url: requestConfigDto.url.replace(
