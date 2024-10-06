@@ -12,7 +12,9 @@ async function bootstrap() {
   try {
     config();
     const app = await NestFactory.create(AppModule);
-    const port = process.env.PORT ? process.env.PORT : DEFAULT_PORT;
+    const port = process.env.NEST_APP_PORT
+      ? process.env.NEST_APP_PORT
+      : DEFAULT_PORT;
     LOGGER.log(`Bootstrap on Port: ${port}`);
     await app.listen(port);
   } catch (err) {
