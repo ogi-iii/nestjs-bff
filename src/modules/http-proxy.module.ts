@@ -1,8 +1,8 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { config } from 'dotenv';
-import { HttpProxyControllerFactory } from 'src/factories/http-proxy-controller.factory';
-import { YamlConfigLoader } from 'src/loaders/yaml-config.loader';
-import { HttpProxyService } from 'src/proxies/http-proxy.service';
+import { HttpProxyControllerFactory } from '../factories/http-proxy-controller.factory';
+import { YamlConfigLoader } from '../loaders/yaml-config.loader';
+import { HttpProxyService } from '../proxies/http-proxy.service';
 
 /**
  * Http Proxy Module
