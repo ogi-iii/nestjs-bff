@@ -32,6 +32,7 @@ export class HttpProxyService {
       ? this.interpolateValues(requestConfigDto.body, requestData)
       : undefined;
     if (requestMethod === 'GET') {
+      // Axios GET request can NOT contain 'data' field.
       axiosRequestConfig.params = body;
     } else {
       axiosRequestConfig.data = body;
