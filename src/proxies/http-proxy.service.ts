@@ -28,10 +28,12 @@ export class HttpProxyService {
         /{{(\w+)}}/g,
         (_, key) => requestData[key],
       ),
-      headers: this.interpolateValuesToJSON(
-        requestConfigDto.headers,
-        request.headers,
-      ),
+      headers: requestConfigDto.headers
+        ? this.interpolateValuesToJSON(
+            requestConfigDto.headers,
+            request.headers,
+          )
+        : undefined,
     };
 
     const body = requestConfigDto.body
