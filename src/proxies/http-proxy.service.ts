@@ -43,7 +43,17 @@ export class HttpProxyService {
       // Axios GET request can NOT contain 'data' field.
       axiosRequestConfig.params = body;
     } else {
-      axiosRequestConfig.data = body;
+      axiosRequestConfig.data =
+        axiosRequestConfig.headers &&
+        axiosRequestConfig.headers['Content-Type'] ===
+          'application/x-www-form-urlencoded'
+          ? Object.keys(body)
+              .map(
+                (key) =>
+                  `${encodeURIComponent(key)}=${encodeURIComponent(body[key])}`,
+              )
+              .join('&')
+          : body;
     }
 
     try {
