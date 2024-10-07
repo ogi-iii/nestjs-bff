@@ -12,12 +12,12 @@ endpoints:
   - path: /api/auth/login
     method: GET
     requestConfig:
-      url: http://keycloak/auth/realms/${KEYCLOAK_REALM_NAME}/protocol/openid-connect/auth?response_type=code&client_id=${KEYCLOAK_CLIENT_ID}&redirect_uri=http%3A%2F%2Fnestjs-bff%2Fapi%2Fauth%2Fcallback&scope=${KEYCLOAK_SCOPE}
+      url: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM_NAME}/protocol/openid-connect/auth?response_type=code&client_id=${KEYCLOAK_CLIENT_ID}&redirect_uri=http%3A%2F%2F${NESTJS_APP_HOST}%3A${NEST_APP_PORT}%2Fapi%2Fauth%2Ftoken&scope=${KEYCLOAK_SCOPE}
       isRedirect: true
-  - path: /api/auth/callback
+  - path: /api/auth/token
     method: GET
     requestConfig:
-      url: http://keycloak/auth/realms/${KEYCLOAK_REALM_NAME}/protocol/openid-connect/token
+      url: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM_NAME}/protocol/openid-connect/token
       method: POST
       headers:
         Content-Type: application/x-www-form-urlencoded
@@ -26,4 +26,4 @@ endpoints:
         client_secret: ${KEYCLOAK_CLIENT_SECRET}
         grant_type: authorization_code
         code: '{{code}}'
-        redirect_uri: http://nestjs-bff/api/posts
+        redirect_uri: http://${NESTJS_APP_HOST}:${NEST_APP_PORT}/api/auth/token
