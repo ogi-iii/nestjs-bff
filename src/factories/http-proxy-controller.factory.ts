@@ -9,10 +9,11 @@ import {
   Post,
   Put,
   Req,
+  Res,
 } from '@nestjs/common';
 import { HttpProxyService } from '../proxies/http-proxy.service';
 import { ControllerEndpointDto } from './dto/controller-endpoint.dto';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { ProxyResponseDto } from './dto/proxy-response.dto';
 
 /**
@@ -33,7 +34,6 @@ export class HttpProxyControllerFactory {
       @Controller(path)
       class HttpProxyController {
         constructor(private readonly httpProxyService: HttpProxyService) {}
-
         @(HttpProxyControllerFactory.getHttpMethodDecorator(method)())
         async handleRequest(
           @Req() request: Request,
@@ -54,7 +54,21 @@ export class HttpProxyControllerFactory {
         }
       }
 
-      return HttpProxyController;
+      @Controller(path)
+      class HttpRedirectController {
+        @(HttpProxyControllerFactory.getHttpMethodDecorator(method)())
+        async handleRequest(@Res() response: Response): Promise<any> {
+          try {
+            return response.redirect(endpoint.requestConfig.url);
+          } catch (err) {
+            throw new HttpException(err.message, 500);
+          }
+        }
+      }
+
+      return endpoint.requestConfig.isRedirect
+        ? HttpRedirectController
+        : HttpProxyController;
     });
   }
 
