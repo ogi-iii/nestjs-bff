@@ -8,8 +8,8 @@ import { Logger } from '@nestjs/common';
  * Yaml Config File Loader
  */
 export class YamlConfigLoader {
-  static LOGGER = new Logger(YamlConfigLoader.name);
-  static DEFAULT_YAML_CONFIG_DIR_PATH = './config';
+  private static LOGGER = new Logger(YamlConfigLoader.name);
+  private static DEFAULT_YAML_CONFIG_DIR_PATH = './config';
 
   /**
    * Load config values from yaml files in the target directory.
