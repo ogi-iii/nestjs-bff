@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as yaml from 'js-yaml';
 import { YamlConfigDto } from './dto/yaml-config.dto';
 import { Logger } from '@nestjs/common';
+import { config } from 'dotenv';
 
 /**
  * Yaml Config File Loader
@@ -33,7 +34,10 @@ export class YamlConfigLoader {
       const filePath = path.join(directoryPath, file);
       try {
         const fileContents = fs.readFileSync(filePath, 'utf8');
-        return yaml.load(fileContents);
+        config();
+        return yaml.load(
+          fileContents.replace(/\${(\w+)}/g, (_, key) => process.env[key]),
+        );
       } catch (err) {
         YamlConfigLoader.LOGGER.error('failed to load yaml file:', err);
         return {};
