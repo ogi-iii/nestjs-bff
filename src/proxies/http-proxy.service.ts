@@ -24,10 +24,9 @@ export class HttpProxyService {
       request.method.toUpperCase() === 'GET' ? request.query : request.body;
     const axiosRequestConfig: AxiosRequestConfig = {
       method: requestMethod,
-      url: requestConfigDto.url.replace(
-        /{{(\w+)}}/gi,
-        (_, key) => requestData[key],
-      ),
+      url: requestConfigDto.url
+        .replace(/{{(\w+)}}/gi, (_, key) => requestData[key])
+        .replace(/{:{(\w+)}:}/gi, (_, key) => sessionStorage[key]),
       headers: requestConfigDto.headers
         ? this.interpolateValuesToJSON(
             requestConfigDto.headers,
@@ -76,10 +75,9 @@ export class HttpProxyService {
     requestData: object,
   ): object {
     return JSON.parse(
-      JSON.stringify(template).replace(
-        /{{(\w+)}}/gi,
-        (_, key) => requestData[key],
-      ),
+      JSON.stringify(template)
+        .replace(/{{(\w+)}}/gi, (_, key) => requestData[key])
+        .replace(/{:{(\w+)}:}/gi, (_, key) => sessionStorage[key]),
     );
   }
 }
