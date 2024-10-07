@@ -11,27 +11,42 @@ describe('create dynamic controller', () => {
       {
         path: '/test/post',
         method: 'POST',
-        requestConfig: {},
+        requestConfig: {
+          url: '',
+          method: '',
+        },
       },
       {
         path: '/test/get',
         method: 'GET',
-        requestConfig: {},
+        requestConfig: {
+          url: '',
+          method: '',
+        },
       },
       {
         path: '/test/put',
         method: 'PUT',
-        requestConfig: {},
+        requestConfig: {
+          url: '',
+          method: '',
+        },
       },
       {
         path: '/test/patch',
         method: 'PATCH',
-        requestConfig: {},
+        requestConfig: {
+          url: '',
+          method: '',
+        },
       },
       {
         path: '/test/delete',
         method: 'DELETE',
-        requestConfig: {},
+        requestConfig: {
+          url: '',
+          method: '',
+        },
       },
     ];
     const dynamicProxyControllers =
