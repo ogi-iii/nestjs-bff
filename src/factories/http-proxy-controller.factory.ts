@@ -30,6 +30,7 @@ export class HttpProxyControllerFactory {
     return endpoints.map((endpoint) => {
       const path = endpoint.path;
       const method = endpoint.method.toLowerCase();
+      const dataSource = method === 'get' ? 'query' : 'body';
 
       @Controller(path)
       class HttpProxyController {
@@ -57,9 +58,17 @@ export class HttpProxyControllerFactory {
       @Controller(path)
       class HttpRedirectController {
         @(HttpProxyControllerFactory.getHttpMethodDecorator(method)())
-        async handleRequest(@Res() response: Response): Promise<any> {
+        async handleRequest(
+          @Req() request: Request,
+          @Res() response: Response,
+        ): Promise<any> {
           try {
-            return response.redirect(endpoint.requestConfig.url);
+            return response.redirect(
+              endpoint.requestConfig.url.replace(
+                /{{(\w+)}}/gi,
+                (_, key) => request[dataSource][key],
+              ),
+            );
           } catch (err) {
             throw new HttpException(err.message, 500);
           }
