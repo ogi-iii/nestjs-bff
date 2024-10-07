@@ -36,7 +36,7 @@ export class YamlConfigLoader {
         const fileContents = fs.readFileSync(filePath, 'utf8');
         config();
         return yaml.load(
-          fileContents.replace(/\${(\w+)}/g, (_, key) => process.env[key]),
+          fileContents.replace(/\${(\w+)}/gi, (_, key) => process.env[key]),
         );
       } catch (err) {
         YamlConfigLoader.LOGGER.error('failed to load yaml file:', err);

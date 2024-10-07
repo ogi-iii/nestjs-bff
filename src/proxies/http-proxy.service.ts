@@ -25,7 +25,7 @@ export class HttpProxyService {
     const axiosRequestConfig: AxiosRequestConfig = {
       method: requestMethod,
       url: requestConfigDto.url.replace(
-        /{{(\w+)}}/g,
+        /{{(\w+)}}/gi,
         (_, key) => requestData[key],
       ),
       headers: requestConfigDto.headers
@@ -77,7 +77,7 @@ export class HttpProxyService {
   ): object {
     return JSON.parse(
       JSON.stringify(template).replace(
-        /{{(\w+)}}/g,
+        /{{(\w+)}}/gi,
         (_, key) => requestData[key],
       ),
     );
