@@ -64,9 +64,10 @@ export class HttpProxyControllerFactory {
         ): Promise<any> {
           try {
             return response.redirect(
-              endpoint.requestConfig.url
-                .replace(/{{(\w+)}}/gi, (_, key) => request[dataSource][key])
-                .replace(/{:{(\w+)}:}/gi, (_, key) => sessionStorage[key]),
+              endpoint.requestConfig.url.replace(
+                /{{(\w+)}}/gi,
+                (_, key) => request[dataSource][key],
+              ),
             );
           } catch (err) {
             throw new HttpException(err.message, 500);
