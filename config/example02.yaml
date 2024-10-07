@@ -12,7 +12,7 @@ endpoints:
   - path: /api/auth/login
     method: GET
     requestConfig:
-      url: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM_NAME}/protocol/openid-connect/auth?response_type=code&client_id=${KEYCLOAK_CLIENT_ID}&redirect_uri=http%3A%2F%2F${NESTJS_APP_HOST}%3A${NEST_APP_PORT}%2Fapi%2Fauth%2Ftoken&scope=${KEYCLOAK_SCOPE}&state={{state}}&nonce={{nonce}}&code_challenge_method=S256&code_challenge=${code_challenge}
+      url: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM_NAME}/protocol/openid-connect/auth?response_type=code&client_id=${KEYCLOAK_CLIENT_ID}&redirect_uri=http%3A%2F%2F${NESTJS_APP_HOST}%3A${NEST_APP_PORT}%2Fapi%2Fauth%2Ftoken&scope=${KEYCLOAK_SCOPE}&state={{state}}&nonce={{nonce}}
       isRedirect: true
   - path: /api/auth/token
     method: GET
@@ -27,4 +27,3 @@ endpoints:
         grant_type: authorization_code
         code: '{{code}}'
         redirect_uri: http://${NESTJS_APP_HOST}:${NEST_APP_PORT}/api/auth/token
-        code_verifier: '{:{code_verifier}:}'
