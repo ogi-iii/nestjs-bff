@@ -19,9 +19,7 @@ export class YamlConfigLoader {
    * @returns Dto which contains config values from yaml files.
    * @throws Error if the target directory was NOT found.
    */
-  static load(
-    dirPath = YamlConfigLoader.DEFAULT_YAML_CONFIG_DIR_PATH,
-  ): YamlConfigDto {
+  static load(dirPath: string): YamlConfigDto {
     const directoryPath = dirPath
       ? dirPath
       : YamlConfigLoader.DEFAULT_YAML_CONFIG_DIR_PATH;

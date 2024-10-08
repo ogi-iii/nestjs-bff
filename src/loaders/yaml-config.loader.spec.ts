@@ -2,7 +2,7 @@ import { YamlConfigLoader } from './yaml-config.loader';
 
 describe('load config from yaml files', () => {
   it('in the default target dir which is set as the default argument', () => {
-    const yamlConfig = YamlConfigLoader.load();
+    const yamlConfig = YamlConfigLoader.load('./config');
     expect(yamlConfig.endpoints.length).toEqual(6);
     yamlConfig.endpoints.forEach((endpoint) => {
       expect(endpoint).toHaveProperty('path');
