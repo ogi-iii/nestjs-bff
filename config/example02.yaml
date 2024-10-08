@@ -1,18 +1,24 @@
 endpoints:
   - path: /api/comments
     method: GET
+    authorize:
+      type: introspect
+      url: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM_NAME}/protocol/openid-connect/token/introspect
     requestConfig:
       url: https://jsonplaceholder.typicode.com/comments?postId={{postId}}
       method: GET
   - path: /api/posts/comments
     method: GET
+    authorize:
+      type: introspect
+      url: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM_NAME}/protocol/openid-connect/token/introspect
     requestConfig:
       url: https://jsonplaceholder.typicode.com/posts/{{postId}}/comments
       method: GET
   - path: /api/auth/login
     method: GET
     requestConfig:
-      url: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM_NAME}/protocol/openid-connect/auth?response_type=code&client_id=${KEYCLOAK_CLIENT_ID}&redirect_uri=http%3A%2F%2F${NESTJS_APP_HOST}%3A${NEST_APP_PORT}%2Fapi%2Fauth%2Ftoken&scope=${KEYCLOAK_SCOPE}&state={{state}}&nonce={{nonce}}
+      url: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM_NAME}/protocol/openid-connect/auth?response_type=code&client_id=${AUTH_CLIENT_ID}&redirect_uri=http%3A%2F%2F${NESTJS_APP_HOST}%3A${NEST_APP_PORT}%2Fapi%2Fauth%2Ftoken&scope=${KEYCLOAK_SCOPE}&state={{state}}&nonce={{nonce}}
       isRedirect: true
   - path: /api/auth/token
     method: GET
@@ -22,8 +28,8 @@ endpoints:
       headers:
         Content-Type: application/x-www-form-urlencoded
       body:
-        client_id: ${KEYCLOAK_CLIENT_ID}
-        client_secret: ${KEYCLOAK_CLIENT_SECRET}
+        client_id: ${AUTH_CLIENT_ID}
+        client_secret: ${AUTH_CLIENT_SECRET}
         grant_type: authorization_code
         code: '{{code}}'
         redirect_uri: http://${NESTJS_APP_HOST}:${NEST_APP_PORT}/api/auth/token

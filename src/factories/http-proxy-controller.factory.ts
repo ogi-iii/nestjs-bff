@@ -2,19 +2,20 @@ import {
   Controller,
   Delete,
   Get,
-  Head,
   HttpException,
-  Options,
   Patch,
   Post,
   Put,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { HttpProxyService } from '../proxies/http-proxy.service';
 import { ControllerEndpointDto } from './dto/controller-endpoint.dto';
 import { Request, Response } from 'express';
 import { ProxyResponseDto } from './dto/proxy-response.dto';
+import { NoOpGuard } from '../guards/no-op.guard';
+import { TokenIntrospectGuard } from '../guards/token-introspect.guard';
 
 /**
  * Controller Factory for Http Proxy
@@ -35,6 +36,7 @@ export class HttpProxyControllerFactory {
       @Controller(path)
       class HttpProxyController {
         constructor(private readonly httpProxyService: HttpProxyService) {}
+        @UseGuards(HttpProxyControllerFactory.getAuthGuard(endpoint))
         @(HttpProxyControllerFactory.getHttpMethodDecorator(method)())
         async handleRequest(
           @Req() request: Request,
@@ -57,6 +59,7 @@ export class HttpProxyControllerFactory {
 
       @Controller(path)
       class HttpRedirectController {
+        @UseGuards(HttpProxyControllerFactory.getAuthGuard(endpoint))
         @(HttpProxyControllerFactory.getHttpMethodDecorator(method)())
         async handleRequest(
           @Req() request: Request,
@@ -82,6 +85,28 @@ export class HttpProxyControllerFactory {
   }
 
   /**
+   * Get the authorization guard to protect api access.
+   *
+   * @param endpoint Dto which contain the endpoint info to create a controller.
+   * @returns Authorization guard to protect api access.
+   */
+  private static getAuthGuard(endpoint: ControllerEndpointDto) {
+    if (!endpoint.authorize) {
+      return NoOpGuard;
+    }
+    const AuthGuardMap = {
+      introspect: new TokenIntrospectGuard(endpoint.authorize.url),
+    };
+    const authGuard = AuthGuardMap[endpoint.authorize.type];
+    if (!authGuard) {
+      throw new Error(
+        `Unsupported authorization guard type: ${endpoint.authorize.type}`,
+      );
+    }
+    return authGuard;
+  }
+
+  /**
    * Get the decorator for the method of controller from http method name.
    *
    * @param method Http method name.
@@ -89,20 +114,16 @@ export class HttpProxyControllerFactory {
    */
   private static getHttpMethodDecorator(method: string) {
     const methodDecoratorMap = {
-      get: Get,
       post: Post,
+      get: Get,
       put: Put,
-      delete: Delete,
       patch: Patch,
-      head: Head,
-      options: Options,
+      delete: Delete,
     };
-
     const decorator = methodDecoratorMap[method];
     if (!decorator) {
       throw new Error(`Unsupported HTTP method: ${method}`);
     }
-
     return decorator;
   }
 }
