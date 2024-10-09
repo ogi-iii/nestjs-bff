@@ -6,8 +6,9 @@ The API endpoints of this BFF can be customized with YAML configuration files.
 The supported types of API endpoint of this BFF is listed in below.
 
 - HTTP Request Proxy (GET / POST / PUT / PATCH / DELETE)
-  - with Authorization (OAuth 2.0 Token Introspection)
-- Authorization Request (OAUTH 2.0 / OpenID Connect)
+  - with Authorization by Token Introspection (OAuth 2.0)
+- Authentication by Authorization Code Flow (OAUTH 2.0 / OpenID Connect)
+- Re-Authentication by Token Refresh (OAUTH 2.0 / OpenID Connect)
 
 ## Requirements
 
@@ -35,11 +36,11 @@ $ ./run-keycloak-container.sh [<PORT> <ADMIN_USERNAME> <ADMIN_PASSWORD>]
 
 #### 2.3. Create Keycloak Client
 
-![Keycloak client creation page](./img/keycloak-client-01.png)
+![Keycloak client creation page 1/3](./img/keycloak-client-01.png)
 
-![Keycloak client creation page](./img/keycloak-client-02.png)
+![Keycloak client creation page 2/3](./img/keycloak-client-02.png)
 
-![Keycloak client creation page](./img/keycloak-client-03.png)
+![Keycloak client creation page 3/3](./img/keycloak-client-03.png)
 
 #### 2.4. Get Keycloak Client Secret
 
