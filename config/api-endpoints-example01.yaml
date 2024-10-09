@@ -1,0 +1,16 @@
+endpoints:
+  - path: /api/posts
+    method: POST
+    requestConfig:
+      url: https://jsonplaceholder.typicode.com/posts
+      method: POST
+      headers:
+        Content-Type: application/json
+      body:
+        name: '{{name}}'
+        email: '{{email}}'
+  - path: /api/posts
+    method: GET
+    requestConfig:
+      url: https://jsonplaceholder.typicode.com/posts
+      method: GET
