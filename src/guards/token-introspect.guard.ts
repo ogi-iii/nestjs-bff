@@ -13,6 +13,12 @@ import { config } from 'dotenv';
 export class TokenIntrospectGuard implements CanActivate {
   constructor(private readonly introspectionEndpoint: string) {}
 
+  /**
+   * Validate request in the target context by authorization.
+   *
+   * @param context Current execution context. Provides access to details about the current request pipeline.
+   * @returns Value indicating whether or not the current request is allowed to proceed.
+   */
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const token = this.extractToken(request);
