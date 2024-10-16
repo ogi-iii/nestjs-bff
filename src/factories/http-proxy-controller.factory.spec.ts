@@ -8,6 +8,7 @@ import {
 import { RequestMethod } from '@nestjs/common';
 import { TokenIntrospectGuard } from '../guards/token-introspect.guard';
 import { NoOpGuard } from '../guards/no-op.guard';
+import { StatePkceGuard } from '../guards/state-pkce.guard';
 
 describe('create dynamic controller', () => {
   const reflector = new Reflector();
@@ -30,7 +31,7 @@ describe('create dynamic controller', () => {
         path: '/test/get',
         method: 'GET',
         authorize: {
-          type: 'introspect',
+          type: 'stateAndPKCE',
           url: '',
         },
         requestConfig: {
@@ -82,10 +83,12 @@ describe('create dynamic controller', () => {
         dynamicProxyController.prototype.handleRequest,
       );
       expect(controllerGuards.length).toEqual(1);
-      if (endpoint.authorize) {
-        expect(controllerGuards[0]).toBeInstanceOf(TokenIntrospectGuard);
-      } else {
+      if (!endpoint.authorize) {
         expect(controllerGuards[0]).toBe(NoOpGuard);
+      } else if (endpoint.authorize.type === 'introspect') {
+        expect(controllerGuards[0]).toBeInstanceOf(TokenIntrospectGuard);
+      } else if (endpoint.authorize.type === 'stateAndPKCE') {
+        expect(controllerGuards[0]).toBe(StatePkceGuard);
       }
 
       const controllerMethod = reflector.get(

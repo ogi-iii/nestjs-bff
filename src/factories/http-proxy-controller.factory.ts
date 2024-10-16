@@ -16,6 +16,7 @@ import { Request, Response } from 'express';
 import { ProxyResponseDto } from './dto/proxy-response.dto';
 import { NoOpGuard } from '../guards/no-op.guard';
 import { TokenIntrospectGuard } from '../guards/token-introspect.guard';
+import { StatePkceGuard } from '../guards/state-pkce.guard';
 
 /**
  * Controller Factory for Http Proxy
@@ -96,6 +97,7 @@ export class HttpProxyControllerFactory {
     }
     const AuthGuardMap = {
       introspect: new TokenIntrospectGuard(endpoint.authorize.url),
+      stateAndPKCE: StatePkceGuard,
     };
     const authGuard = AuthGuardMap[endpoint.authorize.type];
     if (!authGuard) {
