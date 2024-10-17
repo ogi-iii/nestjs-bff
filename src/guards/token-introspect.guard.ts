@@ -66,7 +66,7 @@ export class TokenIntrospectGuard implements CanActivate {
         },
       );
       if (!response.data.active) {
-        throw new UnauthorizedException('Token was NOT active');
+        throw new UnauthorizedException('Token was NOT active.');
       }
       return response.data.active;
     } catch (err) {

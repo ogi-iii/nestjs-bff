@@ -110,7 +110,7 @@ $ npm run start:prod
 | ------------ | ------ | ---------------- | ------------ | --------------- |
 | /api/posts | GET | - | - | - |
 | /api/posts | POST | - | {"name":"`<ANY_NAME>`", "email":"`<ANY_EMAIL>`"} | Content-Type: application/json |
-| /api/auth/login | GET | - | - | - |
+| /api/auth/login | GET | state=`<RANDOM_STRING>`&nonce=`<RANDOM_STRING>` | - | - |
 | /api/comments | GET | postId=`<ANY_NUMBER>` | - | Authorization: Bearer `<YOUR_ACCESS_TOKEN>` |
 | /api/posts/comments | GET | postId=`<ANY_NUMBER>` | - | Authorization: Bearer `<YOUR_ACCESS_TOKEN>` |
 | /api/auth/token/refresh | POST | - | {"refresh_token":"`<YOUR_REFRESH_TOKEN>`"} | Content-Type: application/json |
