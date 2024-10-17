@@ -30,50 +30,43 @@ export class StatePkceGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
     const queryParams = request.query;
     if (!queryParams.state) {
-      throw new UnauthorizedException('State value was NOT found.');
+      throw new UnauthorizedException('State was NOT found.');
     }
-    const hasCodeChallengeParams =
-      queryParams.code_challenge && queryParams.code_challenge_method;
-    if (!hasCodeChallengeParams && !request.body.code_verifier) {
-      throw new UnauthorizedException('PKCE values were NOT found.');
-    }
+    const stateParameter = queryParams.state.toString();
 
     // for auth request
-    if (hasCodeChallengeParams) {
-      const { state, codeChallenge } = this.saveStateAndPKCE();
-      queryParams.state = state;
+    if (!queryParams.code) {
+      const codeChallenge = this.saveStateAndPKCE(stateParameter);
       queryParams.code_challenge = codeChallenge;
       queryParams.code_challenge_method = 'S256';
       return true;
     }
 
     // for token request
-    const stateParameter = queryParams.state.toString();
     this.authorize(stateParameter);
     if (!this.stateCodeVerifierMap.has(stateParameter)) {
-      throw new UnauthorizedException('PKCE values were invalid.');
+      throw new UnauthorizedException('PKCE was invalid.');
     }
-    request.body.code_verifier = this.stateCodeVerifierMap.get(stateParameter);
+    queryParams.code_verifier = this.stateCodeVerifierMap.get(stateParameter);
     return this.stateCodeVerifierMap.delete(stateParameter);
   }
 
   /**
-   * Save state and pkce values in the guard instance.
+   * Save state and PKCE values in the guard instance.
    *
-   * @returns Saved state and pkce values.
+   * @param stateParameter State value in the query parameter.
+   * @returns Code challenge value for PKCE.
    */
-  private saveStateAndPKCE() {
-    const state = this.generateRandomValue();
-    this.stateSet.add(state);
+  private saveStateAndPKCE(stateParameter: string) {
+    this.stateSet.add(stateParameter);
 
     const codeVerifier = this.generateRandomValue();
-    this.stateCodeVerifierMap.set(state, codeVerifier);
-
+    this.stateCodeVerifierMap.set(stateParameter, codeVerifier);
     const codeChallenge = createHash('sha256')
       .update(codeVerifier)
       .digest('base64url');
 
-    return { state, codeChallenge };
+    return codeChallenge;
   }
 
   /**
@@ -93,7 +86,7 @@ export class StatePkceGuard implements CanActivate {
    */
   private authorize(stateParameter: string) {
     if (!this.stateSet.has(stateParameter)) {
-      throw new UnauthorizedException('State value was invalid.');
+      throw new UnauthorizedException('State was invalid.');
     }
     return this.stateSet.delete(stateParameter);
   }
