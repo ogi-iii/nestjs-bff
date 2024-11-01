@@ -9,11 +9,11 @@ graph LR;
     Web(Web)
     end
 
-    subgraph Backend For Frontend
+    subgraph "Backend For Frontend (BFF)"
     NestJSApp(NestJS App)
     end
 
-    subgraph Destination API Services
+    subgraph "Destination API Services"
     MicroService1(Micro Service 1)
     MicroService2(Micro Service 2)
     MicroService3(Micro Service 3)
