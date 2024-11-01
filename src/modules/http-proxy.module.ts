@@ -4,6 +4,7 @@ import { HttpProxyControllerFactory } from '../factories/http-proxy-controller.f
 import { YamlConfigLoader } from '../loaders/yaml-config.loader';
 import { HttpProxyService } from '../proxies/http-proxy.service';
 import { NoOpGuard } from '../guards/no-op.guard';
+import { StatePkceGuard } from '../guards/state-pkce.guard';
 
 /**
  * Http Proxy Module
@@ -23,7 +24,7 @@ export class HttpProxyModule {
     return {
       module: HttpProxyModule,
       controllers: controllers,
-      providers: [HttpProxyService, NoOpGuard],
+      providers: [HttpProxyService, NoOpGuard, StatePkceGuard],
     };
   }
 }
