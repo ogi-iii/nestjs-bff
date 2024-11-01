@@ -1,6 +1,37 @@
 # NestJS-BFF
 This is the project of "Backend For Frontend" (called "BFF") using [NestJS](https://docs.nestjs.com/).
 
+```mermaid
+graph LR;
+    subgraph Clients
+    Android(Android)
+    iOS(iOS)
+    Web(Web)
+    end
+
+    subgraph Backend For Frontend
+    NestJSApp(NestJS App)
+    end
+
+    subgraph Destination API Services
+    MicroService1(Micro Service 1)
+    MicroService2(Micro Service 2)
+    MicroService3(Micro Service 3)
+    MicroService4(Micro Service 4)
+    end
+
+    Android--Send Request-->NestJSApp
+    iOS--Send Request-->NestJSApp
+    Web--Send Request-->NestJSApp
+
+    NestJSApp--Proxy Request-->MicroService1
+    NestJSApp--Proxy Request-->MicroService2
+    NestJSApp--Proxy Request-->MicroService3
+    NestJSApp--Proxy Request-->MicroService4
+```
+
+## Features
+
 The API endpoints of this BFF can be customized with YAML configuration files.
 
 The supported types of API endpoint of this BFF is listed in below.
@@ -70,13 +101,13 @@ $ ./run-keycloak-container.sh [<PORT> <ADMIN_USERNAME> <ADMIN_PASSWORD>]
 | AUTH_CLIENT_ID | Client ID of Keycloak | `nestjs-bff` |
 | AUTH_CLIENT_SECRET | Client Secret of Keycloak | `<YOUR_KEYCLOAK_CLIENT_SECRET>` |
 
-### 4. Installation
+### 4. Install Package Dependencies
 
 ```bash
 $ npm install
 ```
 
-### (Optional) Tests for NestJS App
+### (Optional) Execute Tests for the NestJS App
 
 ```bash
 # unit tests
@@ -117,5 +148,5 @@ $ npm run start:prod
 
 ## See Also
 
-- Sample Destination Endpoints from this NestJS App
+- Sample Destination API Service
   - [JSONPlaceholder - Free Fake REST API](https://jsonplaceholder.typicode.com/)
