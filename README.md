@@ -9,7 +9,7 @@ graph LR;
     Web(Web)
     end
 
-    subgraph "Backend For Frontend (BFF)"
+    subgraph "Backend For Frontend"
     NestJSApp(NestJS App)
     end
 
