@@ -92,7 +92,7 @@ $ ./run-keycloak-container.sh [<PORT> <ADMIN_USERNAME> <ADMIN_PASSWORD>]
 | Variable Name | Explanation | Default Value |
 | ------------- | ----------- | ------------- |
 | YAML_CONFIG_DIR_PATH | Directory Path of Yaml Config Files | `./config` |
-| NESTJS_APP_HOST | Server Host of NestJS Application | `localhost` |
+| NEST_APP_HOST | Server Host of NestJS Application | `localhost` |
 | NEST_APP_PORT | Server Port of NestJS Application | `3002` |
 | KEYCLOAK_HOST | Server Host of Keycloak | `localhost` |
 | KEYCLOAK_PORT | Server Port of Keycloak | `8083` |
