@@ -52,7 +52,7 @@ export class TokenIntrospectGuard implements CanActivate {
     try {
       config();
       const credentials = btoa(
-        `${process.env.AUTH_CLIENT_ID}:${process.env.AUTH_CLIENT_SECRET}`,
+        `${process.env.KEYCLOAK_CLIENT_ID}:${process.env.KEYCLOAK_CLIENT_SECRET}`,
       );
       const response = await axios.post(
         this.introspectionEndpoint,
