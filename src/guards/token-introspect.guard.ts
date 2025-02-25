@@ -51,17 +51,19 @@ export class TokenIntrospectGuard implements CanActivate {
   private async authorize(token: string): Promise<boolean> {
     try {
       config();
+      const credentials = btoa(
+        `${process.env.KEYCLOAK_CLIENT_ID}:${process.env.KEYCLOAK_CLIENT_SECRET}`,
+      );
       const response = await axios.post(
         this.introspectionEndpoint,
         {
           token,
-          client_id: process.env.AUTH_CLIENT_ID,
-          client_secret: process.env.AUTH_CLIENT_SECRET,
-          token_hint: 'access_token',
+          token_type_hint: 'access_token',
         },
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: `Basic ${credentials}`,
           },
         },
       );

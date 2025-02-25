@@ -98,8 +98,8 @@ $ ./run-keycloak-container.sh [<PORT> <ADMIN_USERNAME> <ADMIN_PASSWORD>]
 | KEYCLOAK_PORT | Server Port of Keycloak | `8083` |
 | KEYCLOAK_REALM_NAME | Realm Name of Keycloak | `dev` |
 | KEYCLOAK_SCOPE | Scope for Access Token from Keycloak | `openid` |
-| AUTH_CLIENT_ID | Client ID of Keycloak | `nestjs-bff` |
-| AUTH_CLIENT_SECRET | Client Secret of Keycloak | `<YOUR_KEYCLOAK_CLIENT_SECRET>` |
+| KEYCLOAK_CLIENT_ID | Client ID of Keycloak | `nestjs-bff` |
+| KEYCLOAK_CLIENT_SECRET | Client Secret of Keycloak | `<YOUR_KEYCLOAK_CLIENT_SECRET>` |
 
 ### 4. Install Package Dependencies
 
@@ -144,6 +144,7 @@ $ npm run start:prod
 | /api/auth/login | GET | state=`<RANDOM_STRING>`&nonce=`<RANDOM_STRING>` | - | - |
 | /api/comments | GET | postId=`<ANY_NUMBER>` | - | Authorization: Bearer `<YOUR_ACCESS_TOKEN>` |
 | /api/posts/comments | GET | postId=`<ANY_NUMBER>` | - | Authorization: Bearer `<YOUR_ACCESS_TOKEN>` |
+| /api/auth/token/check | POST | - | {"token":"`<YOUR_ACCESS_TOKEN>`"} | Content-Type: application/json <br> Authorization: Basic `<BASE64_ENCODED("KEYCLOAK_CLIENT_ID:KEYCLOAK_CLIENT_SECRET")>` |
 | /api/auth/token/refresh | POST | - | {"refresh_token":"`<YOUR_REFRESH_TOKEN>`"} | Content-Type: application/json |
 
 ## See Also
