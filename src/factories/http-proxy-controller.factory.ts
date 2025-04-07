@@ -9,6 +9,7 @@ import {
   Req,
   Res,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { HttpProxyService } from '../proxies/http-proxy.service';
 import { ControllerEndpointDto } from './dto/controller-endpoint.dto';
@@ -17,6 +18,8 @@ import { ProxyResponseDto } from './dto/proxy-response.dto';
 import { NoOpGuard } from '../guards/no-op.guard';
 import { TokenIntrospectGuard } from '../guards/token-introspect.guard';
 import { StatePkceGuard } from '../guards/state-pkce.guard';
+import { NoOpInterceptor } from '../interceptors/no-op.interceptor';
+import { SetStateNoncePkceInterceptor } from '../interceptors/set-state-nonce-pkce.interceptor';
 
 /**
  * Controller Factory for Http Proxy
@@ -37,6 +40,9 @@ export class HttpProxyControllerFactory {
       @Controller(path)
       class HttpProxyController {
         constructor(private readonly httpProxyService: HttpProxyService) {}
+        @UseInterceptors(
+          HttpProxyControllerFactory.getAuthInterceptor(endpoint),
+        )
         @UseGuards(HttpProxyControllerFactory.getAuthGuard(endpoint))
         @(HttpProxyControllerFactory.getHttpMethodDecorator(method)())
         async handleRequest(
@@ -60,6 +66,9 @@ export class HttpProxyControllerFactory {
 
       @Controller(path)
       class HttpRedirectController {
+        @UseInterceptors(
+          HttpProxyControllerFactory.getAuthInterceptor(endpoint),
+        )
         @UseGuards(HttpProxyControllerFactory.getAuthGuard(endpoint))
         @(HttpProxyControllerFactory.getHttpMethodDecorator(method)())
         async handleRequest(
@@ -86,6 +95,28 @@ export class HttpProxyControllerFactory {
   }
 
   /**
+   * Get the authentication interceptor to handle cookies.
+   *
+   * @param endpoint Dto which contain the endpoint info to create a controller.
+   * @returns Authentication interceptor to handle cookies.
+   */
+  private static getAuthInterceptor(endpoint: ControllerEndpointDto) {
+    if (!endpoint.authenticate) {
+      return NoOpInterceptor;
+    }
+    const authInterceptorMap = {
+      setStateNoncePKCE: SetStateNoncePkceInterceptor,
+    };
+    const authInterceptor = authInterceptorMap[endpoint.authenticate.type];
+    if (!authInterceptor) {
+      throw new Error(
+        `Unsupported authentication interceptor type: ${endpoint.authenticate.type}`,
+      );
+    }
+    return authInterceptor;
+  }
+
+  /**
    * Get the authorization guard to protect api access.
    *
    * @param endpoint Dto which contain the endpoint info to create a controller.
@@ -95,11 +126,11 @@ export class HttpProxyControllerFactory {
     if (!endpoint.authorize) {
       return NoOpGuard;
     }
-    const AuthGuardMap = {
+    const authGuardMap = {
       introspect: new TokenIntrospectGuard(endpoint.authorize.url),
       stateAndPKCE: StatePkceGuard,
     };
-    const authGuard = AuthGuardMap[endpoint.authorize.type];
+    const authGuard = authGuardMap[endpoint.authorize.type];
     if (!authGuard) {
       throw new Error(
         `Unsupported authorization guard type: ${endpoint.authorize.type}`,
