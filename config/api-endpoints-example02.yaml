@@ -18,14 +18,16 @@ endpoints:
   - path: /api/auth/login
     method: GET
     authenticate:
-      type: setStateNoncePKCE
+      type: code
     requestConfig:
       url: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM_NAME}/protocol/openid-connect/auth?response_type=code&client_id=${KEYCLOAK_CLIENT_ID}&redirect_uri=http%3A%2F%2F${NEST_APP_HOST}%3A${NEST_APP_PORT}%2Fapi%2Fauth%2Ftoken&scope=${KEYCLOAK_SCOPE}&state={{state}}&nonce={{nonce}}&code_challenge={{code_challenge}}&code_challenge_method={{code_challenge_method}}
       isRedirect: true
   - path: /api/auth/token
     method: GET
+    authenticate:
+      type: token
     authorize:
-      type: stateAndPKCE
+      type: state
     requestConfig:
       url: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM_NAME}/protocol/openid-connect/token
       method: POST
