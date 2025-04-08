@@ -16,10 +16,11 @@ import { ControllerEndpointDto } from './dto/controller-endpoint.dto';
 import { Request, Response } from 'express';
 import { ProxyResponseDto } from './dto/proxy-response.dto';
 import { NoOpGuard } from '../guards/no-op.guard';
+import { StateGuard } from '../guards/state.guard';
 import { TokenIntrospectGuard } from '../guards/token-introspect.guard';
-import { StatePkceGuard } from '../guards/state-pkce.guard';
 import { NoOpInterceptor } from '../interceptors/no-op.interceptor';
-import { SetStateNoncePkceInterceptor } from '../interceptors/set-state-nonce-pkce.interceptor';
+import { AuthenticationRequestInterceptor } from '../interceptors/authentication-request.interceptor';
+import { TokenRequestInterceptor } from '../interceptors/token-request.interceptor';
 
 /**
  * Controller Factory for Http Proxy
@@ -105,7 +106,8 @@ export class HttpProxyControllerFactory {
       return NoOpInterceptor;
     }
     const authInterceptorMap = {
-      setStateNoncePKCE: SetStateNoncePkceInterceptor,
+      code: AuthenticationRequestInterceptor,
+      token: TokenRequestInterceptor,
     };
     const authInterceptor = authInterceptorMap[endpoint.authenticate.type];
     if (!authInterceptor) {
@@ -128,7 +130,7 @@ export class HttpProxyControllerFactory {
     }
     const authGuardMap = {
       introspect: new TokenIntrospectGuard(endpoint.authorize.url),
-      stateAndPKCE: StatePkceGuard,
+      state: StateGuard,
     };
     const authGuard = authGuardMap[endpoint.authorize.type];
     if (!authGuard) {
