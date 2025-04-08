@@ -7,12 +7,13 @@ import {
 import { BinaryToTextEncoding, createHash, randomBytes } from 'crypto';
 import { Request, Response } from 'express';
 import { Observable } from 'rxjs';
+import { OIDC_COOKIES } from '../constants/oidc-cookie.constant';
 
 /**
- * State, nonce and PKCE Interceptor to set the values for Authorization Code Flow
+ * Authentication Request Interceptor to set the values of state, nonce, and PKCE for Authorization Code Flow
  */
 @Injectable()
-export class SetStateNoncePkceInterceptor implements NestInterceptor {
+export class AuthenticationRequestInterceptor implements NestInterceptor {
   private CODE_CHALLENGE_METHOD: string = 'S256';
   private HASH_ALGORITHM: string = 'sha256';
   private ENCODING: string = 'base64url';
@@ -37,9 +38,9 @@ export class SetStateNoncePkceInterceptor implements NestInterceptor {
       httpOnly: true,
       maxAge: 600 * 1000, // 10 mins
     };
-    response.cookie('state', state, cookieOptions);
-    response.cookie('nonce', nonce, cookieOptions);
-    response.cookie('codeVerifier', codeVerifier, cookieOptions);
+    response.cookie(OIDC_COOKIES.STATE, state, cookieOptions);
+    response.cookie(OIDC_COOKIES.NONCE, nonce, cookieOptions);
+    response.cookie(OIDC_COOKIES.CODE_VERIFIER, codeVerifier, cookieOptions);
 
     return next.handle();
   }
