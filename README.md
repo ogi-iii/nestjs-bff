@@ -77,11 +77,19 @@ $ ./run-keycloak-container.sh [<PORT> <ADMIN_USERNAME> <ADMIN_PASSWORD>]
 
 ![Keycloak client credentials page](./img/keycloak-client-secret.png)
 
-#### 2.5. Create Keycloak User
+#### 2.5. Move to Keycloak Client Advanced Settings Tab
+
+![Keycloak client advanced settings tab page](./img/keycloak-client-advanced.png)
+
+#### 2.6. Set Keycloak Client PKCE Code Challenge Method
+
+![Keycloak client PKCE code challenge method setting page](./img/keycloak-client-PKCE.png)
+
+#### 2.7. Create Keycloak User
 
 ![Keycloak user creation page](./img/keycloak-user.png)
 
-#### 2.6. Set Keycloak User Password
+#### 2.8. Set Keycloak User Password
 
 ![Keycloak user password setting page](./img/keycloak-user-password.png)
 
@@ -141,7 +149,7 @@ $ npm run start:prod
 | ------------ | ------ | ---------------- | ------------ | --------------- |
 | /api/posts | GET | - | - | - |
 | /api/posts | POST | - | {"name":"`<ANY_NAME>`", "email":"`<ANY_EMAIL>`"} | Content-Type: application/json |
-| /api/auth/login | GET | state=`<RANDOM_STRING>`&nonce=`<RANDOM_STRING>` | - | - |
+| /api/auth/login | GET | - | - | - |
 | /api/comments | GET | postId=`<ANY_NUMBER>` | - | Authorization: Bearer `<YOUR_ACCESS_TOKEN>` |
 | /api/posts/comments | GET | postId=`<ANY_NUMBER>` | - | Authorization: Bearer `<YOUR_ACCESS_TOKEN>` |
 | /api/auth/token/check | POST | - | {"token":"`<YOUR_ACCESS_TOKEN>`"} | Content-Type: application/json <br> Authorization: Basic `<BASE64_ENCODED("KEYCLOAK_CLIENT_ID:KEYCLOAK_CLIENT_SECRET")>` |

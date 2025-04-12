@@ -2,13 +2,17 @@ import { Reflector } from '@nestjs/core';
 import { HttpProxyControllerFactory } from './http-proxy-controller.factory';
 import {
   GUARDS_METADATA,
+  INTERCEPTORS_METADATA,
   METHOD_METADATA,
   PATH_METADATA,
 } from '@nestjs/common/constants';
 import { RequestMethod } from '@nestjs/common';
-import { TokenIntrospectGuard } from '../guards/token-introspect.guard';
 import { NoOpGuard } from '../guards/no-op.guard';
-import { StatePkceGuard } from '../guards/state-pkce.guard';
+import { StateGuard } from '../guards/state.guard';
+import { TokenIntrospectGuard } from '../guards/token-introspect.guard';
+import { NoOpInterceptor } from '../interceptors/no-op.interceptor';
+import { AuthenticationRequestInterceptor } from '../interceptors/authentication-request.interceptor';
+import { TokenRequestInterceptor } from '../interceptors/token-request.interceptor';
 
 describe('create dynamic controller', () => {
   const reflector = new Reflector();
@@ -31,7 +35,7 @@ describe('create dynamic controller', () => {
         path: '/test/get',
         method: 'GET',
         authorize: {
-          type: 'stateAndPKCE',
+          type: 'state',
           url: '',
         },
         requestConfig: {
@@ -63,10 +67,32 @@ describe('create dynamic controller', () => {
           method: '',
         },
       },
+      {
+        path: '/test/login',
+        method: 'GET',
+        authenticate: {
+          type: 'code',
+        },
+        requestConfig: {
+          url: '',
+          method: '',
+        },
+      },
+      {
+        path: '/test/token',
+        method: 'GET',
+        authenticate: {
+          type: 'token',
+        },
+        requestConfig: {
+          url: '',
+          method: '',
+        },
+      },
     ];
     const dynamicProxyControllers =
       HttpProxyControllerFactory.create(endpoints);
-    expect(dynamicProxyControllers.length).toEqual(5);
+    expect(dynamicProxyControllers.length).toEqual(7);
 
     for (let i = 0; i < dynamicProxyControllers.length; i++) {
       const endpoint = endpoints[i];
@@ -85,10 +111,25 @@ describe('create dynamic controller', () => {
       expect(controllerGuards.length).toEqual(1);
       if (!endpoint.authorize) {
         expect(controllerGuards[0]).toBe(NoOpGuard);
+      } else if (endpoint.authorize.type === 'state') {
+        expect(controllerGuards[0]).toBe(StateGuard);
       } else if (endpoint.authorize.type === 'introspect') {
         expect(controllerGuards[0]).toBeInstanceOf(TokenIntrospectGuard);
-      } else if (endpoint.authorize.type === 'stateAndPKCE') {
-        expect(controllerGuards[0]).toBe(StatePkceGuard);
+      }
+
+      const controllerInterceptors = reflector.get(
+        INTERCEPTORS_METADATA,
+        dynamicProxyController.prototype.handleRequest,
+      );
+      expect(controllerInterceptors.length).toEqual(1);
+      if (!endpoint.authenticate) {
+        expect(controllerInterceptors[0]).toBe(NoOpInterceptor);
+      } else if (endpoint.authenticate.type === 'code') {
+        expect(controllerInterceptors[0]).toBe(
+          AuthenticationRequestInterceptor,
+        );
+      } else if (endpoint.authenticate.type === 'token') {
+        expect(controllerInterceptors[0]).toBe(TokenRequestInterceptor);
       }
 
       const controllerMethod = reflector.get(

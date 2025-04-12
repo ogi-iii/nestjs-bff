@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { config } from 'dotenv';
 import { Logger } from '@nestjs/common';
+import { env } from 'process';
+import * as cookieParser from 'cookie-parser';
 
 /**
  * Run NestJS app.
@@ -13,12 +15,9 @@ async function bootstrap() {
   try {
     config();
     const app = await NestFactory.create(AppModule);
-    const host = process.env.NEST_APP_HOST
-      ? process.env.NEST_APP_HOST
-      : DEFAULT_HOST;
-    const port = process.env.NEST_APP_PORT
-      ? process.env.NEST_APP_PORT
-      : DEFAULT_PORT;
+    app.use(cookieParser());
+    const host = env.NEST_APP_HOST ? env.NEST_APP_HOST : DEFAULT_HOST;
+    const port = env.NEST_APP_PORT ? env.NEST_APP_PORT : DEFAULT_PORT;
     LOGGER.log(`Bootstrap on ${host}:${port}`);
     await app.listen(port, host);
   } catch (err) {
