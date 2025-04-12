@@ -22,8 +22,8 @@ describe('TokenRequestInterceptor', () => {
   it('should set code verifier in query parameter and clear cookies after processing', () => {
     const mockRequest = {
       cookies: {
-        nonce: 'test-nonce',
-        codeVerifier: 'test-code-verifier',
+        NONCE: 'test-nonce',
+        CODE_VERIFIER: 'test-code-verifier',
       },
       query: {},
     } as any;
@@ -53,11 +53,11 @@ describe('TokenRequestInterceptor', () => {
 
     expect(mockRequest.query).toHaveProperty('code_verifier');
     expect(mockRequest.query.code_verifier).toBe(
-      mockRequest.cookies.codeVerifier,
+      mockRequest.cookies.CODE_VERIFIER,
     );
 
     expect(mockResponse.cookie).toHaveBeenCalledWith(
-      expect.stringMatching(/state|nonce|codeVerifier/),
+      expect.stringMatching(/STATE|NONCE|CODE_VERIFIER/),
       expect.stringMatching(''),
       expect.objectContaining({
         maxAge: 0,
@@ -88,7 +88,7 @@ describe('TokenRequestInterceptor', () => {
   it('should throw UnauthorizedException if nonce is not found in cookies', () => {
     const mockRequest = {
       cookies: {
-        codeVerifier: 'test-code-verifier',
+        CODE_VERIFIER: 'test-code-verifier',
       },
     } as any;
 
@@ -110,7 +110,7 @@ describe('TokenRequestInterceptor', () => {
   it('should throw UnauthorizedException if code_verifier is not found in cookies', () => {
     const mockRequest = {
       cookies: {
-        nonce: 'test-nonce',
+        NONCE: 'test-nonce',
       },
     } as any;
 
@@ -132,8 +132,8 @@ describe('TokenRequestInterceptor', () => {
   it('should throw UnauthorizedException if id token is not found in response body', (done) => {
     const mockRequest = {
       cookies: {
-        nonce: 'test-nonce',
-        codeVerifier: 'test-code-verifier',
+        NONCE: 'test-nonce',
+        CODE_VERIFIER: 'test-code-verifier',
       },
       query: {},
     } as any;
@@ -164,8 +164,8 @@ describe('TokenRequestInterceptor', () => {
   it('should throw UnauthorizedException if nonce in id token does not match expected nonce', (done) => {
     const mockRequest = {
       cookies: {
-        nonce: 'test-nonce',
-        codeVerifier: 'test-code-verifier',
+        NONCE: 'test-nonce',
+        CODE_VERIFIER: 'test-code-verifier',
       },
       query: {},
     } as any;

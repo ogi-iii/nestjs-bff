@@ -22,7 +22,7 @@ describe('StateGuard', () => {
       switchToHttp: () => ({
         getRequest: () => ({
           query: { state: 'valid-state' },
-          cookies: { state: 'valid-state' },
+          cookies: { STATE: 'valid-state' },
         }),
       }),
     } as ExecutionContext;
@@ -34,7 +34,7 @@ describe('StateGuard', () => {
       switchToHttp: () => ({
         getRequest: () => ({
           query: {},
-          cookies: { state: 'valid-state' },
+          cookies: { STATE: 'valid-state' },
         }),
       }),
     } as ExecutionContext;
@@ -58,7 +58,7 @@ describe('StateGuard', () => {
       switchToHttp: () => ({
         getRequest: () => ({
           query: { state: 'invalid-state' },
-          cookies: { state: 'valid-state' },
+          cookies: { STATE: 'valid-state' },
         }),
       }),
     } as ExecutionContext;

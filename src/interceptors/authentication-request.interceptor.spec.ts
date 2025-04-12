@@ -49,7 +49,7 @@ describe('AuthenticationRequestInterceptor', () => {
     expect(mockRequest.query).toHaveProperty('code_challenge_method', 'S256');
 
     expect(mockResponse.cookie).toHaveBeenCalledWith(
-      expect.stringMatching(/state|nonce|codeVerifier/),
+      expect.stringMatching(/STATE|NONCE|CODE_VERIFIER/),
       expect.any(String),
       expect.objectContaining({
         httpOnly: true,
