@@ -5,7 +5,7 @@ import {
   CallHandler,
 } from '@nestjs/common';
 import { BinaryToTextEncoding, createHash, randomBytes } from 'crypto';
-import { Request, Response } from 'express';
+import { CookieOptions, Request, Response } from 'express';
 import { Observable } from 'rxjs';
 import { OIDC_COOKIES } from '../constants/oidc-cookie.constant';
 
@@ -34,9 +34,11 @@ export class AuthenticationRequestInterceptor implements NestInterceptor {
     queryParams.code_challenge_method = this.CODE_CHALLENGE_METHOD;
 
     const response = context.switchToHttp().getResponse<Response>();
-    const cookieOptions = {
+    const cookieOptions: CookieOptions = {
       httpOnly: true,
-      maxAge: 600 * 1000, // 10 mins
+      sameSite: 'strict',
+      secure: request.secure,
+      maxAge: 300 * 1000, // 5 mins
     };
     response.cookie(OIDC_COOKIES.STATE, state, cookieOptions);
     response.cookie(OIDC_COOKIES.NONCE, nonce, cookieOptions);
