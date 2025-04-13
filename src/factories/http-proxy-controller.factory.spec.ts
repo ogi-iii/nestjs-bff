@@ -141,4 +141,101 @@ describe('create dynamic controller', () => {
       );
     }
   });
+
+  it('to proxy http request as redirect', () => {
+    const endpoints = [
+      {
+        path: '/test/redirect',
+        method: 'GET',
+        requestConfig: {
+          url: 'https://example.com/{{param}}',
+          method: '',
+          isRedirect: true,
+        },
+      },
+    ];
+    const dynamicProxyControllers =
+      HttpProxyControllerFactory.create(endpoints);
+    expect(dynamicProxyControllers.length).toEqual(1);
+
+    const dynamicProxyController = dynamicProxyControllers[0];
+    const endpoint = endpoints[0];
+    const controllerPath = reflector.get(PATH_METADATA, dynamicProxyController);
+    expect(controllerPath).toEqual(endpoint.path);
+
+    const controllerMethod = reflector.get(
+      METHOD_METADATA,
+      dynamicProxyController.prototype.handleRequest,
+    );
+    expect(RequestMethod[controllerMethod].toString()).toEqual(endpoint.method);
+
+    const controllerGuards = reflector.get(
+      GUARDS_METADATA,
+      dynamicProxyController.prototype.handleRequest,
+    );
+    expect(controllerGuards.length).toEqual(1);
+    expect(controllerGuards[0]).toBe(NoOpGuard);
+
+    const controllerInterceptors = reflector.get(
+      INTERCEPTORS_METADATA,
+      dynamicProxyController.prototype.handleRequest,
+    );
+    expect(controllerInterceptors.length).toEqual(1);
+    expect(controllerInterceptors[0]).toBe(NoOpInterceptor);
+  });
+
+  it('to handle unsupported HTTP methods', () => {
+    const endpoints = [
+      {
+        path: '/test/unsupported',
+        method: 'INVALID',
+        requestConfig: {
+          url: '',
+          method: '',
+        },
+      },
+    ];
+    expect(() => HttpProxyControllerFactory.create(endpoints)).toThrow(
+      `Unsupported HTTP method: ${endpoints[0].method.toLowerCase()}`,
+    );
+  });
+
+  it('to handle unsupported authentication interceptor types', () => {
+    const endpoints = [
+      {
+        path: '/test/unsupported-auth',
+        method: 'GET',
+        authenticate: {
+          type: 'unsupported',
+        },
+        requestConfig: {
+          url: '',
+          method: '',
+        },
+      },
+    ];
+    expect(() => HttpProxyControllerFactory.create(endpoints)).toThrow(
+      `Unsupported authentication interceptor type: ${endpoints[0].authenticate.type}`,
+    );
+  });
+
+  it('to handle unsupported authorization guard types', () => {
+    const endpoints = [
+      {
+        path: '/test/unsupported-guard',
+        method: 'GET',
+        authorize: {
+          type: 'unsupported',
+          url: '',
+        },
+        requestConfig: {
+          url: '',
+          method: '',
+        },
+      },
+    ];
+    expect(() => HttpProxyControllerFactory.create(endpoints)).toThrow(
+      `Unsupported authorization guard type: ${endpoints[0].authorize.type}`,
+    );
+  });
 });

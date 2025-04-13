@@ -6,12 +6,44 @@ describe('proxy http request', () => {
   const rootUrl = 'https://jsonplaceholder.typicode.com';
   const httpProxyService = new HttpProxyService();
 
-  it('as POST method to the target url', async () => {
+  it('as POST method to the target url with json body', async () => {
     const requestConfigDto: HttpRequestConfigDto = {
       url: rootUrl + '/posts',
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+      },
+      body: {
+        name: '{{name}}',
+        email: '{{email}}',
+      },
+    };
+    const requestData = {
+      name: 'test',
+      email: 'test@example.com',
+    };
+    const request = {
+      query: {},
+      params: {},
+      body: requestData,
+      headers: {},
+      method: 'POST',
+    } as unknown as Request;
+    const response = await httpProxyService.proxyHttpRequest(
+      requestConfigDto,
+      request,
+    );
+    expect(response.status).toEqual(201);
+    expect(response.data).toHaveProperty('name', requestData.name);
+    expect(response.data).toHaveProperty('email', requestData.email);
+  });
+
+  it('as POST method to the target url with x-www-form-urlencoded body', async () => {
+    const requestConfigDto: HttpRequestConfigDto = {
+      url: rootUrl + '/posts',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: {
         name: '{{name}}',
