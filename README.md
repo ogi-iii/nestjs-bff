@@ -1,4 +1,7 @@
 # NestJS-BFF
+
+[![Coverage Status](https://coveralls.io/repos/github/ogi-iii/nestjs-bff/badge.svg)](https://coveralls.io/github/ogi-iii/nestjs-bff)
+
 This is the project of "Backend For Frontend" (called "BFF") using [NestJS](https://docs.nestjs.com/).
 
 ```mermaid
