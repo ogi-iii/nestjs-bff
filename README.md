@@ -1,5 +1,6 @@
 # NestJS-BFF
 
+[![Test and Coverage](https://github.com/ogi-iii/nestjs-bff/actions/workflows/coveralls.yml/badge.svg)](https://github.com/ogi-iii/nestjs-bff/actions/workflows/coveralls.yml)
 [![Coverage Status](https://coveralls.io/repos/github/ogi-iii/nestjs-bff/badge.svg?branch=main)](https://coveralls.io/github/ogi-iii/nestjs-bff?branch=main)
 
 This is the project of "Backend For Frontend" (called "BFF") using [NestJS](https://docs.nestjs.com/).
