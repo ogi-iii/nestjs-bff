@@ -48,9 +48,9 @@ The supported types of API endpoint of this BFF is listed in below.
 
 ## Requirements
 
-- Docker (version 27.2.0 or later)
-- Node (version 20.12.1 or later)
-- npm (version 10.9.0 or later)
+- Docker (version 28.0.4 or later)
+- Node (version 22.14.0 or later)
+- npm (version 10.9.2 or later)
 
 ## Getting started
 
