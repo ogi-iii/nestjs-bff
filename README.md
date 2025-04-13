@@ -43,6 +43,7 @@ The supported types of API endpoint of this BFF is listed in below.
 - HTTP Request Proxy (GET / POST / PUT / PATCH / DELETE)
   - with Authorization by Token Introspection (OAuth 2.0)
 - Authentication by Authorization Code Flow (OAUTH 2.0 / OpenID Connect)
+  - which automatically handles state, nonce, and PKCE (OpenID Connect)
 - Re-Authentication by Token Refresh (OAUTH 2.0 / OpenID Connect)
 
 ## Requirements
