@@ -18,6 +18,14 @@ export class AuthenticationRequestInterceptor implements NestInterceptor {
   private HASH_ALGORITHM: string = 'sha256';
   private ENCODING: string = 'base64url';
 
+  /**
+   * Generate and set the values of state, nonce, and PKCE to the target context on authorization code flow.
+   *
+   * @param context an `ExecutionContext` object providing methods to access the
+   * route handler and class about to be invoked.
+   * @param next a reference to the `CallHandler`, which provides access to an
+   * `Observable` representing the response stream from the route handler.
+   */
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const state = this.generateRandomValue();
     const nonce = this.generateRandomValue();

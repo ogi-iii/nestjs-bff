@@ -17,6 +17,14 @@ import { OIDC_COOKIES } from '../constants/oidc-cookie.constant';
 export class TokenRequestInterceptor implements NestInterceptor {
   private NONCE_NOT_FOUND_ERROR_MESSAGE: string = 'Nonce was NOT found.';
 
+  /**
+   * Check whether the values of nonce and PKCE are valid in the target context on authorization code flow.
+   *
+   * @param context an `ExecutionContext` object providing methods to access the
+   * route handler and class about to be invoked.
+   * @param next a reference to the `CallHandler`, which provides access to an
+   * `Observable` representing the response stream from the route handler.
+   */
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest<Request>();
     const cookies = request.cookies;
