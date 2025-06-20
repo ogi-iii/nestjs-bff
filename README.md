@@ -57,50 +57,45 @@ The supported types of API endpoint of this BFF is listed in below.
 ### 1. Run the Keycloak Container
 
 ```bash
-$ ./run-keycloak-container.sh [<PORT> <ADMIN_USERNAME> <ADMIN_PASSWORD>]
+$ ./run-keycloak-container.sh [<KEYCLOAK_PORT> <KEYCLOAK_ADMIN_USERNAME> <KEYCLOAK_ADMIN_PASSWORD>]
 ```
 
-### 2. Setup Keycloak
+### 2. Get Keycloak Client Secret
+
+> [!NOTE]
+> Keycloak `dev` realm will be automatically created by importing it from the JSON when the container starts.
 
 #### 2.1. Login Keycloak as Admin User
 
-![Keycloak login page](./img/keycloak-login.png)
+> [!TIP]
+> Please restart your Keycloak container if you cannot access `localhost:<KEYCLOAK_PORT>`.
 
-#### 2.2. Create Keycloak Realm
+![Keycloak admin login page](./img/keycloak-admin-login.png)
 
-![Keycloak realm creation page](./img/keycloak-realm.png)
+#### 2.2. Select Keycloak Realm: `dev`
 
-#### 2.3. Create Keycloak Client
+![Keycloak realms menu tab](./img/keycloak-realms-menu.png)
 
-![Keycloak client creation page 1/3](./img/keycloak-client-01.png)
+![Keycloak realms select page](./img/keycloak-realms-select.png)
 
-![Keycloak client creation page 2/3](./img/keycloak-client-02.png)
+![Keycloak realm top page](./img/keycloak-realm-dev.png)
 
-![Keycloak client creation page 3/3](./img/keycloak-client-03.png)
+#### 2.3. Select Keycloak Client: `nestjs-bff`
 
-#### 2.4. Get Keycloak Client Secret
+![Keycloak clients menu tab](./img/keycloak-clients-menu.png)
+
+![Keycloak clients select page](./img/keycloak-clients-select.png)
+
+#### 2.4. Copy Keycloak Client Secret
 
 ![Keycloak client credentials page](./img/keycloak-client-secret.png)
-
-#### 2.5. Move to Keycloak Client Advanced Settings Tab
-
-![Keycloak client advanced settings tab page](./img/keycloak-client-advanced.png)
-
-#### 2.6. Set Keycloak Client PKCE Code Challenge Method
-
-![Keycloak client PKCE code challenge method setting page](./img/keycloak-client-PKCE.png)
-
-#### 2.7. Create Keycloak User
-
-![Keycloak user creation page](./img/keycloak-user.png)
-
-#### 2.8. Set Keycloak User Password
-
-![Keycloak user password setting page](./img/keycloak-user-password.png)
 
 ### 3. Edit Environment Variables
 
 **Default environment variables are defined in `.env` file.**
+
+> [!IMPORTANT]
+> Please set the environment variable `KEYCLOAK_CLIENT_SECRET` with the value you copied from the Keycloak console.
 
 | Variable Name | Explanation | Default Value |
 | ------------- | ----------- | ------------- |
@@ -149,6 +144,11 @@ $ npm run start:prod
 ### 6. Try to Access API Endpoints of the NestJS App!
 
 **API endpoints are defined on YAML files in `config/` directory.**
+
+> [!TIP]
+> You can login with the below user for testing the API: `/api/auth/login`
+> - username: `myuser`
+> - password: `P@ssw0rd!`
 
 | API Endpoint | Method | Query Parameters | Request Body | Request Headers |
 | ------------ | ------ | ---------------- | ------------ | --------------- |
