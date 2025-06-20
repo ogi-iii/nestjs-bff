@@ -53,3 +53,10 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Keycloak data
+keycloak/dev/data/*
+!keycloak/dev/data/import/
+!keycloak/dev/data/import/dev-realm.json
+keycloak/dev/data/import/*
+!keycloak/dev/data/import/dev-realm.json
