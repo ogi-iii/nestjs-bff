@@ -8,5 +8,5 @@ docker run --rm \
   -e KC_BOOTSTRAP_ADMIN_USERNAME=${admin_username:-"admin"} \
   -e KC_BOOTSTRAP_ADMIN_PASSWORD=${admin_password:-"password"} \
   -p ${local_port:-"127.0.0.1:8083"}:8080 \
-  keycloak/keycloak:26.2 \
+  quay.io/keycloak/keycloak:26.2 \
   start-dev --import-realm
