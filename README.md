@@ -41,10 +41,9 @@ The API endpoints of this BFF can be customized with YAML configuration files.
 The supported types of API endpoint of this BFF is listed in below.
 
 - HTTP Request Proxy (GET / POST / PUT / PATCH / DELETE)
-  - with Authorization by Token Introspection (OAuth 2.0)
-- Authentication by Authorization Code Flow (OAUTH 2.0 / OpenID Connect)
+  - which can authorize via session cookie by exchanging with the access token cached in Redis (OpenID Connect)
+- User authentication by Authorization Code Flow (OAUTH 2.0 / OpenID Connect)
   - which automatically handles state, nonce, and PKCE (OpenID Connect)
-- Re-Authentication by Token Refresh (OAUTH 2.0 / OpenID Connect)
 
 ## Requirements
 
@@ -69,6 +68,9 @@ $ ./run-keycloak-container.sh [<KEYCLOAK_PORT> <KEYCLOAK_ADMIN_USERNAME> <KEYCLO
 
 > [!TIP]
 > Please restart your Keycloak container if you cannot access `localhost:<KEYCLOAK_PORT>`.
+
+> [!NOTE]
+> You can change your Keycloak admin username and password by passing the optional arguments for `run-keycloak-container.sh`.
 
 ![Keycloak admin login page](./img/keycloak-admin-login.png)
 
@@ -149,16 +151,16 @@ $ npm run start:prod
 > You can login with the below user for testing the API: `/api/auth/login`
 > - username: `myuser`
 > - password: `P@ssw0rd!`
+>
+> Then, the OIDC (OpenID Connect) session cookie will have been automatically set when your user login process was succeeded.
 
 | API Endpoint | Method | Query Parameters | Request Body | Request Headers |
 | ------------ | ------ | ---------------- | ------------ | --------------- |
 | /api/posts | GET | - | - | - |
 | /api/posts | POST | - | {"name":"`<ANY_NAME>`", "email":"`<ANY_EMAIL>`"} | Content-Type: application/json |
 | /api/auth/login | GET | - | - | - |
-| /api/comments | GET | postId=`<ANY_NUMBER>` | - | Authorization: Bearer `<YOUR_ACCESS_TOKEN>` |
-| /api/posts/comments | GET | postId=`<ANY_NUMBER>` | - | Authorization: Bearer `<YOUR_ACCESS_TOKEN>` |
-| /api/auth/token/check | POST | - | {"token":"`<YOUR_ACCESS_TOKEN>`"} | Content-Type: application/json <br> Authorization: Basic `<BASE64_ENCODED("KEYCLOAK_CLIENT_ID:KEYCLOAK_CLIENT_SECRET")>` |
-| /api/auth/token/refresh | POST | - | {"refresh_token":"`<YOUR_REFRESH_TOKEN>`"} | Content-Type: application/json |
+| /api/comments | GET | postId=`<ANY_NUMBER>` | - | Cookie: `<YOUR_OIDC_SESSION_COOKIE>` |
+| /api/posts/comments | GET | postId=`<ANY_NUMBER>` | - | Cookie: `<YOUR_OIDC_SESSION_COOKIE>` |
 
 ## See Also
 
