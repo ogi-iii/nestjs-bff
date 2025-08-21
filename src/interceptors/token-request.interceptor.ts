@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { Observable, tap } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import * as jwt from 'jsonwebtoken';
 import { OIDC_COOKIES } from '../constants/oidc-cookie.constant';
 
@@ -49,7 +49,7 @@ export class TokenRequestInterceptor implements NestInterceptor {
     response.cookie(OIDC_COOKIES.CODE_VERIFIER, blankValue, cookieOptions);
 
     return next.handle().pipe(
-      tap((responseBody) => {
+      map((responseBody) => {
         const idToken = responseBody.data?.id_token;
         if (!idToken) {
           throw new UnauthorizedException('ID Token was NOT found.');
@@ -61,6 +61,7 @@ export class TokenRequestInterceptor implements NestInterceptor {
         if (decodedIdToken.nonce !== expectedNonce) {
           throw new UnauthorizedException('Nonce was invalid.');
         }
+        return responseBody;
       }),
     );
   }
