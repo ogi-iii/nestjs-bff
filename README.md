@@ -41,9 +41,9 @@ The API endpoints of this BFF can be customized with YAML configuration files.
 The supported types of API endpoint of this BFF is listed in below.
 
 - HTTP Request Proxy (GET / POST / PUT / PATCH / DELETE)
-  - which can authorize via session cookie by exchanging with the access token cached in Redis (OpenID Connect)
-- User authentication by Authorization Code Flow (OAUTH 2.0 / OpenID Connect)
-  - which automatically handles state, nonce, and PKCE (OpenID Connect)
+  - which can authorize via session cookie with automatic exchange for the OpenID Connect access token cached in Redis
+- User authentication via OpenID Connect Authorization Code Flow
+  - which automatically handles state, nonce, and PKCE
 
 ## Requirements
 
