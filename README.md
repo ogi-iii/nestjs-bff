@@ -64,11 +64,14 @@ $ docker compose up -d
 
 ```bash
 # Keycloak
-$ curl -o /dev/null -s -w "%{http_code}\n" http://127.0.0.1:8083 | grep -Eq '^302$' \
+$ curl -o /dev/null -s -w "%{http_code}\n" http://localhost:8083 | grep -Eq '^302$' \
 && echo "Keycloak is ready to connect." \
 || echo "Keycloak is NOT ready. Please wait a moment."
 
 # Redis
+$ printf '*1\r\n$4\r\nPING\r\n' | nc localhost 6375 | tr -d '\r' | grep -Eq '^\+PONG$' \
+&& echo "Redis is ready to connect." \
+|| echo "Redis is NOT ready. Please wait a moment."
 ```
 
 ### 2. Get Keycloak Client Secret

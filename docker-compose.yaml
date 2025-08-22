@@ -10,3 +10,9 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: password
     command: [ "start-dev", "--import-realm" ]
+  token-cache-redis:
+    image: redis:7.2
+    container_name: token-cache-redis
+    ports:
+      - "127.0.0.1:6375:6379"
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
