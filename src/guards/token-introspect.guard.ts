@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import axios from 'axios';
-import { config } from 'dotenv';
 
 /**
  * Token Introspection Guard for Authorization
@@ -50,7 +49,6 @@ export class TokenIntrospectGuard implements CanActivate {
    */
   private async authorize(token: string): Promise<boolean> {
     try {
-      config();
       const credentials = btoa(
         `${process.env.KEYCLOAK_CLIENT_ID}:${process.env.KEYCLOAK_CLIENT_SECRET}`,
       );
