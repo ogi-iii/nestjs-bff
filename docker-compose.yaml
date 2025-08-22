@@ -1,0 +1,12 @@
+services:
+  openid-provider-keycloak:
+    image: quay.io/keycloak/keycloak:26.2
+    container_name: openid-provider-keycloak
+    ports:
+      - "127.0.0.1:8083:8080"
+    volumes:
+      - ./keycloak/dev/data/import:/opt/keycloak/data/import
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: password
+    command: [ "start-dev", "--import-realm" ]
