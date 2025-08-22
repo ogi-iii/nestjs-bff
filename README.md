@@ -47,16 +47,28 @@ The supported types of API endpoint of this BFF is listed in below.
 
 ## Requirements
 
-- Docker (version 28.0.4 or later)
+- Docker (version 28.3.2 or later)
+- Docker Compose (version 2.39.1 or later)
 - Node (version 22.14.0 or later)
 - npm (version 10.9.2 or later)
 
 ## Getting started
 
-### 1. Run the Keycloak Container
+### 1. Run the Keycloak and Redis Containers with Docker Compose
 
 ```bash
-$ ./run-keycloak-container.sh [<KEYCLOAK_PORT> <KEYCLOAK_ADMIN_USERNAME> <KEYCLOAK_ADMIN_PASSWORD>]
+$ docker compose up -d
+```
+
+### (Optional) Check if the Keycloak and Redis Containers is Ready to Connect
+
+```bash
+# Keycloak
+$ curl -o /dev/null -s -w "%{http_code}\n" http://127.0.0.1:8083 | grep -Eq '^302$' \
+&& echo "Keycloak is ready to connect." \
+|| echo "Keycloak is NOT ready. Please wait a moment."
+
+# Redis
 ```
 
 ### 2. Get Keycloak Client Secret
@@ -66,11 +78,8 @@ $ ./run-keycloak-container.sh [<KEYCLOAK_PORT> <KEYCLOAK_ADMIN_USERNAME> <KEYCLO
 
 #### 2.1. Login Keycloak as Admin User
 
-> [!TIP]
-> Please restart your Keycloak container if you cannot access `localhost:<KEYCLOAK_PORT>`.
-
 > [!NOTE]
-> You can change your Keycloak admin username and password by passing the optional arguments for `run-keycloak-container.sh`.
+> You can change your Keycloak admin username and password by modifying the values of environment variables in `docker-compose.yaml`.
 
 ![Keycloak admin login page](./img/keycloak-admin-login.png)
 
@@ -147,7 +156,7 @@ $ npm run start:prod
 
 **API endpoints are defined on YAML files in `config/` directory.**
 
-> [!TIP]
+> [!NOTE]
 > You can login with the below user for testing the API: `/api/auth/login`
 > - username: `myuser`
 > - password: `P@ssw0rd!`
@@ -161,6 +170,12 @@ $ npm run start:prod
 | /api/auth/login | GET | - | - | - |
 | /api/comments | GET | postId=`<ANY_NUMBER>` | - | Cookie: `<YOUR_OIDC_SESSION_COOKIE>` |
 | /api/posts/comments | GET | postId=`<ANY_NUMBER>` | - | Cookie: `<YOUR_OIDC_SESSION_COOKIE>` |
+
+### (Optional) Shutdown and Remove the Keycloak and Redis Containers with Docker Compose
+
+```bash
+$ docker compose down
+```
 
 ## See Also
 
