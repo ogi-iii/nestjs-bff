@@ -69,7 +69,7 @@ $ curl -o /dev/null -s -w "%{http_code}\n" http://localhost:8083 | grep -Eq '^30
 || echo "Keycloak is NOT ready. Please wait a moment."
 
 # Redis
-$ printf '*1\r\n$4\r\nPING\r\n' | nc localhost 6375 | tr -d '\r' | grep -Eq '^\+PONG$' \
+$ printf '*1\r\n$4\r\nPING\r\n' | nc localhost 6376 | tr -d '\r' | grep -Eq '^\+PONG$' \
 && echo "Redis is ready to connect." \
 || echo "Redis is NOT ready. Please wait a moment."
 ```

@@ -14,5 +14,5 @@ services:
     image: redis:7.2
     container_name: token-cache-redis
     ports:
-      - "127.0.0.1:6375:6379"
+      - "127.0.0.1:6376:6379"
     command: ["redis-server", "--save", "", "--appendonly", "no"]
