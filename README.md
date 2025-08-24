@@ -122,6 +122,8 @@ $ printf '*1\r\n$4\r\nPING\r\n' | nc localhost 6376 | tr -d '\r' | grep -Eq '^\+
 | KEYCLOAK_SCOPE | Scope for Access Token from Keycloak | `openid` |
 | KEYCLOAK_CLIENT_ID | Client ID of Keycloak | `nestjs-bff` |
 | KEYCLOAK_CLIENT_SECRET | Client Secret of Keycloak | `<YOUR_KEYCLOAK_CLIENT_SECRET>` |
+| REDIS_HOST | Server Host of Redis Cache Server | `localhost` |
+| REDIS_PORT | Server Port of Redis Cache Server | `6376` |
 
 ### 4. Install Package Dependencies
 
