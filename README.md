@@ -124,6 +124,7 @@ $ printf '*1\r\n$4\r\nPING\r\n' | nc localhost 6376 | tr -d '\r' | grep -Eq '^\+
 | KEYCLOAK_CLIENT_SECRET | Client Secret of Keycloak | `<YOUR_KEYCLOAK_CLIENT_SECRET>` |
 | REDIS_HOST | Server Host of Redis Cache Server | `localhost` |
 | REDIS_PORT | Server Port of Redis Cache Server | `6376` |
+| REDIS_TTL_MILLISECONDS | TTL Milliseconds for the value stored in the Redis Cache Server | `300000` |
 
 ### 4. Install Package Dependencies
 
