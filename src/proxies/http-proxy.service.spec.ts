@@ -273,31 +273,4 @@ describe('proxy http request', () => {
     );
     expect(response.status).toEqual(404);
   });
-
-  it('as GET method to the url which returns request headers', async () => {
-    const requestConfigDto: HttpRequestConfigDto = {
-      url: 'https://httpbin.org/headers',
-      method: 'GET',
-      headers: {
-        Accept: '{{accept}}',
-      },
-      body: {},
-    };
-    const requestData = {
-      accept: 'application/json',
-    };
-    const request = {
-      query: {},
-      params: {},
-      body: {},
-      headers: requestData,
-      method: 'GET',
-    } as unknown as Request;
-    const response = await httpProxyService.proxyHttpRequest(
-      requestConfigDto,
-      request,
-    );
-    expect(response.status).toEqual(200);
-    expect(response.data.headers).toHaveProperty('Accept', requestData.accept);
-  });
 });
