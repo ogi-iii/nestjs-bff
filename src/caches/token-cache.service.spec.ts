@@ -36,7 +36,10 @@ describe('TokenCacheService', () => {
     it('should store access token and return session cookie value', async () => {
       (cacheManagerService.set as jest.Mock).mockResolvedValue(undefined);
 
-      const result = await service.set('access-token');
+      const result = await service.set(
+        'access-token',
+        parseInt(process.env.REDIS_TTL_MILLISECONDS),
+      );
       expect(result).toBe('mocked-uuid');
       expect(cacheManagerService.set).toHaveBeenCalledWith(
         'mocked-uuid',

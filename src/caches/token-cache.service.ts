@@ -14,14 +14,15 @@ export class TokenCacheService {
    * Set the access token in the cache using session cookie value as the key.
    *
    * @param accessToken Target access token which is stored in the cache.
+   * @param cacheTTL Optional cache time to live.
    * @returns Session cookie value which is the key to get the access token from cache.
    */
-  async set(accessToken: string): Promise<string> {
+  async set(accessToken: string, cacheTTL?: number): Promise<string> {
     const sessionCookieValue = uuidV4();
     await this.cacheManagerService.set(
       sessionCookieValue,
       accessToken,
-      parseInt(process.env.REDIS_TTL_MILLISECONDS),
+      cacheTTL,
     ); // This setter method returns the stored access token.
     return sessionCookieValue;
   }

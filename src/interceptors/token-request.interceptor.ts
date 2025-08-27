@@ -5,10 +5,11 @@ import {
   CallHandler,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { map, Observable } from 'rxjs';
+import { CookieOptions, Request, Response } from 'express';
+import { mergeMap, Observable } from 'rxjs';
 import * as jwt from 'jsonwebtoken';
 import { OIDC_COOKIES } from '../constants/oidc-cookie.constant';
+import { TokenCacheService } from '../caches/token-cache.service';
 
 /**
  * Token Request Interceptor to handle the value of nonce and PKCE for Authorization Code Flow
@@ -16,6 +17,8 @@ import { OIDC_COOKIES } from '../constants/oidc-cookie.constant';
 @Injectable()
 export class TokenRequestInterceptor implements NestInterceptor {
   private NONCE_NOT_FOUND_ERROR_MESSAGE: string = 'Nonce was NOT found.';
+
+  constructor(private readonly tokenCacheService: TokenCacheService) {}
 
   /**
    * Check whether the values of nonce and PKCE are valid in the target context on authorization code flow.
@@ -40,7 +43,7 @@ export class TokenRequestInterceptor implements NestInterceptor {
     queryParams.code_verifier = codeVerifier;
 
     const response = context.switchToHttp().getResponse<Response>();
-    const cookieOptions = {
+    const cookieOptions: CookieOptions = {
       maxAge: 0, // delete immediately
     };
     const blankValue = '';
@@ -49,10 +52,10 @@ export class TokenRequestInterceptor implements NestInterceptor {
     response.cookie(OIDC_COOKIES.CODE_VERIFIER, blankValue, cookieOptions);
 
     return next.handle().pipe(
-      map((responseBody) => {
+      mergeMap(async (responseBody) => {
         const idToken = responseBody.data?.id_token;
         if (!idToken) {
-          throw new UnauthorizedException('ID Token was NOT found.');
+          throw new UnauthorizedException('ID token was NOT found.');
         }
         const decodedIdToken = jwt.decode(idToken) as { nonce?: string };
         if (!decodedIdToken?.nonce) {
@@ -61,7 +64,26 @@ export class TokenRequestInterceptor implements NestInterceptor {
         if (decodedIdToken.nonce !== expectedNonce) {
           throw new UnauthorizedException('Nonce was invalid.');
         }
-        return responseBody;
+        const accessToken = responseBody.data?.access_token;
+        if (!accessToken) {
+          throw new UnauthorizedException('Access token was NOT found.');
+        }
+        const oidcSessionValue = await this.tokenCacheService.set(accessToken);
+        const oidcSessionCookieOptions: CookieOptions = {
+          httpOnly: true,
+          sameSite: 'strict',
+          secure: request.secure,
+          maxAge: parseInt(process.env.REDIS_TTL_MILLISECONDS),
+        };
+        response.cookie(
+          OIDC_COOKIES.SESSION,
+          oidcSessionValue,
+          oidcSessionCookieOptions,
+        );
+        return {
+          ...responseBody,
+          data: { authorization: 'succeeded' },
+        };
       }),
     );
   }
