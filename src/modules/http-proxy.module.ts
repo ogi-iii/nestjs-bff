@@ -11,8 +11,8 @@ import { TokenCacheService } from '../caches/token-cache.service';
  */
 @Module({
   imports: [
+    // Cache Manager using Keyv to connect Redis server
     CacheModule.registerAsync({
-      isGlobal: true,
       useFactory: async () => {
         return {
           stores: [
