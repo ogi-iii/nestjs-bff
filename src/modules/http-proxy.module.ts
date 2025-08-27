@@ -1,4 +1,6 @@
 import { DynamicModule, Module } from '@nestjs/common';
+import { CacheModule } from '@nestjs/cache-manager';
+import { createKeyv } from '@keyv/redis';
 import { HttpProxyControllerFactory } from '../factories/http-proxy-controller.factory';
 import { YamlConfigLoader } from '../loaders/yaml-config.loader';
 import { HttpProxyService } from '../proxies/http-proxy.service';
@@ -7,7 +9,22 @@ import { TokenCacheService } from '../caches/token-cache.service';
 /**
  * Http Proxy Module
  */
-@Module({})
+@Module({
+  imports: [
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useFactory: async () => {
+        return {
+          stores: [
+            createKeyv(
+              `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+            ),
+          ],
+        };
+      },
+    }),
+  ],
+})
 export class HttpProxyModule {
   /**
    * Register dynamic module.
