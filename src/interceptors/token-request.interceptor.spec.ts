@@ -340,7 +340,7 @@ describe('TokenRequestInterceptor', () => {
         }),
       );
       expect(result).toEqual({
-        data: { authorization: 'succeeded' },
+        data: { authentication: 'succeeded' },
       });
       done();
     });

@@ -86,7 +86,7 @@ export class TokenRequestInterceptor implements NestInterceptor {
         );
         return {
           ...responseBody,
-          data: { authorization: 'succeeded' },
+          data: { authentication: 'succeeded' },
         };
       }),
     );
