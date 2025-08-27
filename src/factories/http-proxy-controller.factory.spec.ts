@@ -13,6 +13,8 @@ import { TokenIntrospectGuard } from '../guards/token-introspect.guard';
 import { NoOpInterceptor } from '../interceptors/no-op.interceptor';
 import { AuthenticationRequestInterceptor } from '../interceptors/authentication-request.interceptor';
 import { TokenRequestInterceptor } from '../interceptors/token-request.interceptor';
+import { OIDCMetadata } from '../decorators/oidc-metadata.decorator';
+import { equal } from 'assert';
 
 describe('create dynamic controller', () => {
   const reflector = new Reflector();
@@ -114,7 +116,7 @@ describe('create dynamic controller', () => {
       } else if (endpoint.authorize.type === 'state') {
         expect(controllerGuards[0]).toBe(StateGuard);
       } else if (endpoint.authorize.type === 'introspect') {
-        expect(controllerGuards[0]).toBeInstanceOf(TokenIntrospectGuard);
+        expect(controllerGuards[0]).toBe(TokenIntrospectGuard);
       }
 
       const controllerInterceptors = reflector.get(
@@ -130,6 +132,14 @@ describe('create dynamic controller', () => {
         );
       } else if (endpoint.authenticate.type === 'token') {
         expect(controllerInterceptors[0]).toBe(TokenRequestInterceptor);
+      }
+
+      if (endpoint.authorize?.url) {
+        const controllerOIDCMetadata = reflector.get(
+          OIDCMetadata,
+          dynamicProxyController.prototype.handleRequest,
+        );
+        equal(controllerOIDCMetadata, endpoint.authorize.url);
       }
 
       const controllerMethod = reflector.get(

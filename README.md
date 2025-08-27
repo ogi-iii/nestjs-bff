@@ -41,23 +41,37 @@ The API endpoints of this BFF can be customized with YAML configuration files.
 The supported types of API endpoint of this BFF is listed in below.
 
 - HTTP Request Proxy (GET / POST / PUT / PATCH / DELETE)
-  - with Authorization by Token Introspection (OAuth 2.0)
-- Authentication by Authorization Code Flow (OAUTH 2.0 / OpenID Connect)
-  - which automatically handles state, nonce, and PKCE (OpenID Connect)
-- Re-Authentication by Token Refresh (OAUTH 2.0 / OpenID Connect)
+  - which can authorize via session cookie with automatic exchange for the OpenID Connect access token cached in Redis
+- User authentication via OpenID Connect Authorization Code Flow
+  - which automatically handles state, nonce, and PKCE
 
 ## Requirements
 
-- Docker (version 28.0.4 or later)
+- Docker (version 28.3.2 or later)
+- Docker Compose (version 2.39.1 or later)
 - Node (version 22.14.0 or later)
 - npm (version 10.9.2 or later)
 
 ## Getting started
 
-### 1. Run the Keycloak Container
+### 1. Run the Keycloak and Redis Containers with Docker Compose
 
 ```bash
-$ ./run-keycloak-container.sh [<KEYCLOAK_PORT> <KEYCLOAK_ADMIN_USERNAME> <KEYCLOAK_ADMIN_PASSWORD>]
+$ docker compose up -d
+```
+
+### (Optional) Check if the Keycloak and Redis Containers is Ready to Connect
+
+```bash
+# Keycloak
+$ curl -o /dev/null -s -w "%{http_code}\n" http://localhost:8083 | grep -Eq '^302$' \
+&& echo "Keycloak is ready to connect." \
+|| echo "Keycloak is NOT ready. Please wait a moment."
+
+# Redis
+$ printf '*1\r\n$4\r\nPING\r\n' | nc localhost 6376 | tr -d '\r' | grep -Eq '^\+PONG$' \
+&& echo "Redis is ready to connect." \
+|| echo "Redis is NOT ready. Please wait a moment."
 ```
 
 ### 2. Get Keycloak Client Secret
@@ -67,8 +81,8 @@ $ ./run-keycloak-container.sh [<KEYCLOAK_PORT> <KEYCLOAK_ADMIN_USERNAME> <KEYCLO
 
 #### 2.1. Login Keycloak as Admin User
 
-> [!TIP]
-> Please restart your Keycloak container if you cannot access `localhost:<KEYCLOAK_PORT>`.
+> [!NOTE]
+> You can change your Keycloak admin username and password by modifying the values of environment variables in `docker-compose.yaml`.
 
 ![Keycloak admin login page](./img/keycloak-admin-login.png)
 
@@ -108,6 +122,9 @@ $ ./run-keycloak-container.sh [<KEYCLOAK_PORT> <KEYCLOAK_ADMIN_USERNAME> <KEYCLO
 | KEYCLOAK_SCOPE | Scope for Access Token from Keycloak | `openid` |
 | KEYCLOAK_CLIENT_ID | Client ID of Keycloak | `nestjs-bff` |
 | KEYCLOAK_CLIENT_SECRET | Client Secret of Keycloak | `<YOUR_KEYCLOAK_CLIENT_SECRET>` |
+| REDIS_HOST | Server Host of Redis Cache Server | `localhost` |
+| REDIS_PORT | Server Port of Redis Cache Server | `6376` |
+| REDIS_TTL_MILLISECONDS | TTL Milliseconds for the Value Stored in the Redis Cache Server | `300000` |
 
 ### 4. Install Package Dependencies
 
@@ -145,20 +162,26 @@ $ npm run start:prod
 
 **API endpoints are defined on YAML files in `config/` directory.**
 
-> [!TIP]
+> [!NOTE]
 > You can login with the below user for testing the API: `/api/auth/login`
 > - username: `myuser`
 > - password: `P@ssw0rd!`
+>
+> Then, the OIDC (OpenID Connect) session cookie will have been automatically set when your user login process was succeeded.
 
 | API Endpoint | Method | Query Parameters | Request Body | Request Headers |
 | ------------ | ------ | ---------------- | ------------ | --------------- |
 | /api/posts | GET | - | - | - |
 | /api/posts | POST | - | {"name":"`<ANY_NAME>`", "email":"`<ANY_EMAIL>`"} | Content-Type: application/json |
 | /api/auth/login | GET | - | - | - |
-| /api/comments | GET | postId=`<ANY_NUMBER>` | - | Authorization: Bearer `<YOUR_ACCESS_TOKEN>` |
-| /api/posts/comments | GET | postId=`<ANY_NUMBER>` | - | Authorization: Bearer `<YOUR_ACCESS_TOKEN>` |
-| /api/auth/token/check | POST | - | {"token":"`<YOUR_ACCESS_TOKEN>`"} | Content-Type: application/json <br> Authorization: Basic `<BASE64_ENCODED("KEYCLOAK_CLIENT_ID:KEYCLOAK_CLIENT_SECRET")>` |
-| /api/auth/token/refresh | POST | - | {"refresh_token":"`<YOUR_REFRESH_TOKEN>`"} | Content-Type: application/json |
+| /api/comments | GET | postId=`<ANY_NUMBER>` | - | Cookie: `<YOUR_BFF_OIDC_SESSION_COOKIE_VALUE>` |
+| /api/posts/comments | GET | postId=`<ANY_NUMBER>` | - | Cookie: `<YOUR_BFF_OIDC_SESSION_COOKIE_VALUE>` |
+
+### (Optional) Shutdown and Remove the Keycloak and Redis Containers with Docker Compose
+
+```bash
+$ docker compose down
+```
 
 ## See Also
 

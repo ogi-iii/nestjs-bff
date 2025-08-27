@@ -21,6 +21,7 @@ import { TokenIntrospectGuard } from '../guards/token-introspect.guard';
 import { NoOpInterceptor } from '../interceptors/no-op.interceptor';
 import { AuthenticationRequestInterceptor } from '../interceptors/authentication-request.interceptor';
 import { TokenRequestInterceptor } from '../interceptors/token-request.interceptor';
+import { OIDCMetadata } from '../decorators/oidc-metadata.decorator';
 
 /**
  * Controller Factory for Http Proxy
@@ -45,6 +46,7 @@ export class HttpProxyControllerFactory {
           HttpProxyControllerFactory.getAuthInterceptor(endpoint),
         )
         @UseGuards(HttpProxyControllerFactory.getAuthGuard(endpoint))
+        @OIDCMetadata(HttpProxyControllerFactory.getOIDCMetadata(endpoint))
         @(HttpProxyControllerFactory.getHttpMethodDecorator(method)())
         async handleRequest(
           @Req() request: Request,
@@ -129,7 +131,7 @@ export class HttpProxyControllerFactory {
       return NoOpGuard;
     }
     const authGuardMap = {
-      introspect: new TokenIntrospectGuard(endpoint.authorize.url),
+      introspect: TokenIntrospectGuard,
       state: StateGuard,
     };
     const authGuard = authGuardMap[endpoint.authorize.type];
@@ -139,6 +141,16 @@ export class HttpProxyControllerFactory {
       );
     }
     return authGuard;
+  }
+
+  /**
+   * Get the metadata for OpenID Connect authorization.
+   *
+   * @param endpoint Dto which contain the endpoint info to create a controller.
+   * @returns Metadata for OpenID Connect authorization.
+   */
+  private static getOIDCMetadata(endpoint: ControllerEndpointDto) {
+    return endpoint.authorize?.url;
   }
 
   /**
