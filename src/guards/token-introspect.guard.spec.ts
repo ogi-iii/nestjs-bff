@@ -1,103 +1,112 @@
-import { ExecutionContext } from '@nestjs/common';
 import { TokenIntrospectGuard } from './token-introspect.guard';
+import { Reflector } from '@nestjs/core';
+import { TokenCacheService } from '../caches/token-cache.service';
+import { UnauthorizedException, ExecutionContext } from '@nestjs/common';
 import axios from 'axios';
+import { OIDC_COOKIES } from '../constants/oidc-cookie.constant';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('TokenIntrospectGuard', () => {
   let guard: TokenIntrospectGuard;
-  const introspectionEndpoint = 'http://example.com/introspect';
+  let reflector: Reflector;
+  let tokenCacheService: TokenCacheService;
+  let context: ExecutionContext;
 
   beforeEach(() => {
-    guard = new TokenIntrospectGuard(introspectionEndpoint);
+    reflector = { get: jest.fn() } as any;
+    tokenCacheService = { getAccessToken: jest.fn() } as any;
+    guard = new TokenIntrospectGuard(reflector, tokenCacheService);
+
+    context = {
+      switchToHttp: jest.fn().mockReturnValue({
+        getRequest: jest.fn(),
+      }),
+      getHandler: jest.fn(),
+    } as any;
   });
 
   describe('canActivate', () => {
-    it('should return true if the token is valid', async () => {
-      const context: ExecutionContext = {
-        switchToHttp: () => ({
-          getRequest: () => ({
-            headers: { authorization: 'Bearer valid-token' },
-          }),
-        }),
-      } as ExecutionContext;
+    it('should throw UnauthorizedException if token is not found', async () => {
+      const req = { cookies: { [OIDC_COOKIES.BFF_OIDC_SESSION]: 'session' } };
+      (context.switchToHttp().getRequest as jest.Mock).mockReturnValue(req);
+      (tokenCacheService.getAccessToken as jest.Mock).mockResolvedValue(null);
 
-      mockedAxios.post.mockResolvedValueOnce({ data: { active: true } });
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('should throw UnauthorizedException if session cookie is missing', async () => {
+      const req = { cookies: {} };
+      (context.switchToHttp().getRequest as jest.Mock).mockReturnValue(req);
+
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('should call authorize with correct params', async () => {
+      const req = { cookies: { [OIDC_COOKIES.BFF_OIDC_SESSION]: 'session' } };
+      (context.switchToHttp().getRequest as jest.Mock).mockReturnValue(req);
+      (tokenCacheService.getAccessToken as jest.Mock).mockResolvedValue(
+        'token',
+      );
+      (reflector.get as jest.Mock).mockReturnValue('endpoint');
+      jest.spyOn(guard as any, 'authorize').mockResolvedValue(true);
 
       const result = await guard.canActivate(context);
       expect(result).toBe(true);
-      expect(mockedAxios.post).toHaveBeenCalledWith(
-        introspectionEndpoint,
-        { token: 'valid-token', token_type_hint: 'access_token' },
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization: expect.stringContaining('Basic '),
-          }),
-        }),
+      expect((guard as any).authorize).toHaveBeenCalledWith(
+        'token',
+        'endpoint',
+      );
+    });
+  });
+
+  describe('extractToken', () => {
+    it('should throw UnauthorizedException if cookie is missing', async () => {
+      const req = { cookies: {} };
+      await expect((guard as any).extractToken(req)).rejects.toThrow(
+        UnauthorizedException,
       );
     });
 
-    it('should throw UnauthorizedException if the token is invalid', async () => {
-      const context: ExecutionContext = {
-        switchToHttp: () => ({
-          getRequest: () => ({
-            headers: { authorization: 'Bearer invalid-token' },
-          }),
-        }),
-      } as ExecutionContext;
-
-      mockedAxios.post.mockResolvedValueOnce({ data: { active: false } });
-
-      await expect(guard.canActivate(context)).rejects.toThrow(
-        'Token was NOT active.',
+    it('should return token from cache', async () => {
+      const req = { cookies: { [OIDC_COOKIES.BFF_OIDC_SESSION]: 'session' } };
+      (tokenCacheService.getAccessToken as jest.Mock).mockResolvedValue(
+        'token',
       );
+      const token = await (guard as any).extractToken(req);
+      expect(token).toBe('token');
+    });
+  });
+
+  describe('authorize', () => {
+    beforeEach(() => {
+      process.env.KEYCLOAK_CLIENT_ID = 'client';
+      process.env.KEYCLOAK_CLIENT_SECRET = 'secret';
     });
 
-    it('should throw UnauthorizedException if no token is provided', async () => {
-      const context: ExecutionContext = {
-        switchToHttp: () => ({
-          getRequest: () => ({
-            headers: {},
-          }),
-        }),
-      } as ExecutionContext;
-
-      await expect(guard.canActivate(context)).rejects.toThrow(
-        'Access token was NOT found.',
-      );
+    it('should return true if token is active', async () => {
+      mockedAxios.post.mockResolvedValue({ data: { active: true } });
+      const result = await (guard as any).authorize('token', 'endpoint');
+      expect(result).toBe(true);
     });
 
-    it('should throw UnauthorizedException if the authorization header does not start with "Bearer "', async () => {
-      const context: ExecutionContext = {
-        switchToHttp: () => ({
-          getRequest: () => ({
-            headers: { authorization: 'Basic test-token' },
-          }),
-        }),
-      } as ExecutionContext;
-
-      await expect(guard.canActivate(context)).rejects.toThrow(
-        'Access token was NOT found.',
-      );
+    it('should throw UnauthorizedException if token is not active', async () => {
+      mockedAxios.post.mockResolvedValue({ data: { active: false } });
+      await expect(
+        (guard as any).authorize('token', 'endpoint'),
+      ).rejects.toThrow(UnauthorizedException);
     });
 
-    it('should throw UnauthorizedException if axios throws an error', async () => {
-      const context: ExecutionContext = {
-        switchToHttp: () => ({
-          getRequest: () => ({
-            headers: { authorization: 'Bearer valid-token' },
-          }),
-        }),
-      } as ExecutionContext;
-
-      const expectedErrorMessage = 'Network error';
-      mockedAxios.post.mockRejectedValueOnce(new Error(expectedErrorMessage));
-
-      await expect(guard.canActivate(context)).rejects.toThrow(
-        expectedErrorMessage,
-      );
+    it('should throw UnauthorizedException on axios error', async () => {
+      mockedAxios.post.mockRejectedValue(new Error('Network error'));
+      await expect(
+        (guard as any).authorize('token', 'endpoint'),
+      ).rejects.toThrow(UnauthorizedException);
     });
   });
 });
