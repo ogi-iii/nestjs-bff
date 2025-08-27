@@ -68,7 +68,10 @@ export class TokenRequestInterceptor implements NestInterceptor {
         if (!accessToken) {
           throw new UnauthorizedException('Access token was NOT found.');
         }
-        const oidcSessionValue = await this.tokenCacheService.set(accessToken);
+        const oidcSessionValue = await this.tokenCacheService.set(
+          accessToken,
+          parseInt(process.env.REDIS_TTL_MILLISECONDS),
+        );
         const oidcSessionCookieOptions: CookieOptions = {
           httpOnly: true,
           sameSite: 'strict',

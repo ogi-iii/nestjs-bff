@@ -5,10 +5,7 @@ import { of } from 'rxjs';
 import * as jwt from 'jsonwebtoken';
 import { TokenCacheService } from '../caches/token-cache.service';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
-
-jest.mock('uuid', () => ({
-  v4: jest.fn(() => 'mock-oidc-session-value'),
-}));
+import { createHash } from 'crypto';
 
 describe('TokenRequestInterceptor', () => {
   let interceptor: TokenRequestInterceptor;
@@ -16,7 +13,7 @@ describe('TokenRequestInterceptor', () => {
 
   beforeEach(async () => {
     cacheManagerService = {
-      set: jest.fn().mockResolvedValue('mock-oidc-session-value'),
+      set: jest.fn(),
       get: jest.fn(),
     } as any;
 
@@ -329,8 +326,11 @@ describe('TokenRequestInterceptor', () => {
       const sessionCookieCall = mockResponse.cookie.mock.calls.find(
         (call: any[]) => call[0].match(/SESSION/),
       );
+      const mockedSession = createHash('sha256')
+        .update('test-access-token')
+        .digest('hex');
       expect(sessionCookieCall).toBeDefined();
-      expect(sessionCookieCall[1]).toBe('mock-oidc-session-value');
+      expect(sessionCookieCall[1]).toBe(mockedSession);
       expect(sessionCookieCall[2]).toEqual(
         expect.objectContaining({
           httpOnly: true,

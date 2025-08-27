@@ -1,7 +1,7 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
-import { v4 as uuidV4 } from 'uuid';
+import { createHash } from 'crypto';
 
 /**
  * Access Token Cache Service
@@ -18,7 +18,9 @@ export class TokenCacheService {
    * @returns Session cookie value which is the key to get the access token from cache.
    */
   async set(accessToken: string, cacheTTL?: number): Promise<string> {
-    const sessionCookieValue = uuidV4();
+    const sessionCookieValue = createHash('sha256')
+      .update(accessToken)
+      .digest('hex');
     await this.cacheManagerService.set(
       sessionCookieValue,
       accessToken,

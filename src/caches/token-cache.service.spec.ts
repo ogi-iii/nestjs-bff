@@ -2,10 +2,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TokenCacheService } from './token-cache.service';
 import { Cache } from 'cache-manager';
-
-jest.mock('uuid', () => ({
-  v4: jest.fn(() => 'mocked-uuid'),
-}));
+import { createHash } from 'crypto';
 
 describe('TokenCacheService', () => {
   let service: TokenCacheService;
@@ -40,9 +37,12 @@ describe('TokenCacheService', () => {
         'access-token',
         parseInt(process.env.REDIS_TTL_MILLISECONDS),
       );
-      expect(result).toBe('mocked-uuid');
+      const mockedSession = createHash('sha256')
+        .update('access-token')
+        .digest('hex');
+      expect(result).toBe(mockedSession);
       expect(cacheManagerService.set).toHaveBeenCalledWith(
-        'mocked-uuid',
+        mockedSession,
         'access-token',
         1000,
       );
