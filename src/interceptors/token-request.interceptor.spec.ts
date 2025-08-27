@@ -322,9 +322,9 @@ describe('TokenRequestInterceptor', () => {
       ),
     };
     interceptor.intercept(context, mockCallHandler).subscribe((result) => {
-      // Find the call where SESSION cookie is set
+      // Find the call where BFF_OIDC_SESSION cookie is set
       const sessionCookieCall = mockResponse.cookie.mock.calls.find(
-        (call: any[]) => call[0].match(/SESSION/),
+        (call: any[]) => call[0].match(/BFF_OIDC_SESSION/),
       );
       const mockedSession = createHash('sha256')
         .update('test-access-token')

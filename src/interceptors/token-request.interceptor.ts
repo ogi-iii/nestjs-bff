@@ -79,7 +79,7 @@ export class TokenRequestInterceptor implements NestInterceptor {
           maxAge: parseInt(process.env.REDIS_TTL_MILLISECONDS),
         };
         response.cookie(
-          OIDC_COOKIES.SESSION,
+          OIDC_COOKIES.BFF_OIDC_SESSION,
           oidcSessionValue,
           oidcSessionCookieOptions,
         );

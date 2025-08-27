@@ -174,8 +174,8 @@ $ npm run start:prod
 | /api/posts | GET | - | - | - |
 | /api/posts | POST | - | {"name":"`<ANY_NAME>`", "email":"`<ANY_EMAIL>`"} | Content-Type: application/json |
 | /api/auth/login | GET | - | - | - |
-| /api/comments | GET | postId=`<ANY_NUMBER>` | - | Cookie: `<YOUR_OIDC_SESSION_COOKIE>` |
-| /api/posts/comments | GET | postId=`<ANY_NUMBER>` | - | Cookie: `<YOUR_OIDC_SESSION_COOKIE>` |
+| /api/comments | GET | postId=`<ANY_NUMBER>` | - | Cookie: `<YOUR_BFF_OIDC_SESSION_COOKIE>` |
+| /api/posts/comments | GET | postId=`<ANY_NUMBER>` | - | Cookie: `<YOUR_BFF_OIDC_SESSION_COOKIE>` |
 
 ### (Optional) Shutdown and Remove the Keycloak and Redis Containers with Docker Compose
 
