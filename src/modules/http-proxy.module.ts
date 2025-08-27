@@ -2,7 +2,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { HttpProxyControllerFactory } from '../factories/http-proxy-controller.factory';
 import { YamlConfigLoader } from '../loaders/yaml-config.loader';
 import { HttpProxyService } from '../proxies/http-proxy.service';
-import { TokenCacheService } from 'src/caches/token-cache.service';
+import { TokenCacheService } from '../caches/token-cache.service';
 
 /**
  * Http Proxy Module
